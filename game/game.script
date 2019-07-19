@@ -1,0 +1,60 @@
+local mapper = require "in.mapper"
+local actions = require "game.actions"
+local champs = require "game.champs"
+
+local function create_champ(x, y, id, player, champ)
+	local pos = vmath.vector3(x, y, 0)
+	local props = {
+		player = player,
+		id = id,
+		champ = champ,
+	}
+	pprint(props)
+	return factory.create("#champfactory", pos, nil, props)
+end
+
+function init(self)
+	msg.post("@render:", "clear_color", { color = vmath.vector4(0.3, 0.3, 0.3, 1.0) })
+	
+	self.champs = {
+		create_champ(-60, 0, 1, true, champs.TERRY_BROGAN),
+		create_champ(-20, 0, 2, false, champs.BRETT_AMOR),
+		create_champ(20, 0, 3, false, champs.TERRY_BROGAN),
+		create_champ(60, 0, 4, false, champs.TERRY_BROGAN),
+	}
+
+	--[[
+
+	Controls:
+	Arrows -> move
+	Double tap arrow -> run
+	Move into opponent -> Grapple
+	A -> Punch
+	B -> Kick
+	A when running -> Clothesline -> Opponent on mat
+	B when running -> Jump kick -> Opponent on mat
+	A when running and opponent on mat -> Elbow
+	B when running and opponent on mat -> Big splash (land on opponent)
+	A when opponent on mat -> Pin opponent -> Referee count
+	B when opponent on mat -> Pick up opponent
+	A when opponent picked up -> Throw (out of ring if possible)
+	B when opponent picked up -> Knee/back breaker
+	A when grappling -> Throw backwards
+	B when grappling -> Backwards kick with flip
+	--]]
+
+	
+	mapper.bind(mapper.KEY_UP, actions.UP, 1)
+	mapper.bind(mapper.KEY_DOWN, actions.DOWN, 1)
+	mapper.bind(mapper.KEY_LEFT, actions.LEFT, 1)
+	mapper.bind(mapper.KEY_RIGHT, actions.RIGHT, 1)
+	mapper.bind(mapper.KEY_N, actions.A, 1)
+	mapper.bind(mapper.KEY_M, actions.B, 1)
+		
+	mapper.bind(mapper.KEY_W, actions.UP, 4)
+	mapper.bind(mapper.KEY_S, actions.DOWN, 4)
+	mapper.bind(mapper.KEY_A, actions.LEFT, 4)
+	mapper.bind(mapper.KEY_D, actions.RIGHT, 4)
+	mapper.bind(mapper.KEY_Q, actions.A, 4)
+	mapper.bind(mapper.KEY_E, actions.B, 4)
+end

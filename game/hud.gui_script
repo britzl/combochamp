@@ -1,0 +1,25 @@
+function init(self)
+	self.champs = {}
+	for i=1,4 do
+		self.champs[i] = {
+			root = gui.get_node("champ" .. i .. "/root"),
+			portrait = gui.get_node("champ" .. i .. "/portrait"),
+			health = gui.get_node("champ" .. i .. "/health_bar")
+		}
+
+		gui.set_enabled(self.champs[i].root, false)
+	end
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("champ") then
+		local champ = self.champs[message.id]
+		gui.set_enabled(champ.root, true)
+		gui.set_scale(champ.health, vmath.vector3(message.health, 1, 1))
+	end
+end
+
+function on_reload(self)
+	-- Add input-handling code here
+	-- Remove this function if not needed
+end

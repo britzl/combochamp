@@ -1,5 +1,5 @@
 [bootstrap]
-main_collection = /main/main.collectionc
+main_collection = /game/game.collectionc
 render = /orthographic/render/orthographic.renderc
 
 [script]
@@ -11,24 +11,31 @@ height = 640
 
 [android]
 input_method = HiddenInputField
-package = com.britzl.todo
+package = com.britzl.combochamp
 gcm_sender_id = 
 
 [project]
-dependencies = https://github.com/britzl/monarch/archive/2.17.2.zip,https://github.com/britzl/defold-orthographic/archive/2.9.1.zip,https://github.com/britzl/defold-input/archive/1.6.0.zip
+dependencies = https://github.com/britzl/monarch/archive/2.17.2.zip,https://github.com/britzl/defold-orthographic/archive/2.9.1.zip,https://github.com/britzl/defold-input/archive/1.6.0.zip,https://github.com/britzl/ludobits/archive/6.6.0.zip
+title = Combo Champ
 
 [physics]
 gravity_y = -1000.0
 scale = 0.02
 max_collisions = 64
+debug = 0
 
 [osx]
-bundle_identifier = com.britzl.todo
+bundle_identifier = com.britzl.combochamp
+infoplist = /builtins/manifests/osx/Info.plist
 
 [ios]
-bundle_identifier = com.britzl.todo
+bundle_identifier = com.britzl.combochamp
 infoplist = /builtins/manifests/ios/Info.plist
 
 [input]
 game_binding = /in/bindings/all.input_bindingc
+
+[graphics]
+default_texture_min_filter = nearest
+default_texture_mag_filter = nearest
 

@@ -1,0 +1,33 @@
+images {
+  image: "/assets/images/ring.png"
+}
+images {
+  image: "/assets/images/ropepost_topleft.png"
+}
+images {
+  image: "/assets/images/ropepost_topright.png"
+}
+images {
+  image: "/assets/images/ropepost_bottomleft.png"
+}
+images {
+  image: "/assets/images/ropepost_bottomright.png"
+}
+images {
+  image: "/assets/images/rope_horizontal.png"
+}
+images {
+  image: "/assets/images/rope_vertical.png"
+}
+images {
+  image: "/assets/images/hit1.png"
+}
+images {
+  image: "/assets/images/health_bg.png"
+}
+images {
+  image: "/assets/images/transparent1px.png"
+}
+margin: 0
+extrude_borders: 2
+inner_padding: 0

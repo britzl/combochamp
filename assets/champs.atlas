@@ -1,0 +1,338 @@
+images {
+  image: "/assets/images/announcer/announcer_mic.png"
+}
+images {
+  image: "/assets/images/announcer/announcer_paper.png"
+}
+images {
+  image: "/assets/images/champs/gray_ape/grap_ape_idle0.png"
+}
+images {
+  image: "/assets/images/champs/kid_disco/kid_disco_idle0.png"
+}
+images {
+  image: "/assets/images/champs/mark_devotion/mark_devotion_idle0.png"
+}
+images {
+  image: "/assets/images/referee/referee.png"
+}
+images {
+  image: "/assets/images/referee/referee_arm_up.png"
+}
+images {
+  image: "/assets/images/shadow.png"
+}
+animations {
+  id: "terry_brogan_taunt"
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_taunt0.png"
+  }
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_taunt1.png"
+  }
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_taunt2.png"
+  }
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_taunt3.png"
+  }
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_taunt4.png"
+  }
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_taunt5.png"
+  }
+  playback: PLAYBACK_ONCE_FORWARD
+  fps: 10
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "mark_devotion_taunt"
+  images {
+    image: "/assets/images/champs/mark_devotion/mark_devotion_taunt0.png"
+  }
+  images {
+    image: "/assets/images/champs/mark_devotion/mark_devotion_taunt1.png"
+  }
+  images {
+    image: "/assets/images/champs/mark_devotion/mark_devotion_taunt2.png"
+  }
+  images {
+    image: "/assets/images/champs/mark_devotion/mark_devotion_taunt3.png"
+  }
+  images {
+    image: "/assets/images/champs/mark_devotion/mark_devotion_taunt4.png"
+  }
+  images {
+    image: "/assets/images/champs/mark_devotion/mark_devotion_taunt5.png"
+  }
+  playback: PLAYBACK_ONCE_FORWARD
+  fps: 10
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "kid_disco_taunt"
+  images {
+    image: "/assets/images/champs/kid_disco/kid_disco_taunt0.png"
+  }
+  images {
+    image: "/assets/images/champs/kid_disco/kid_disco_taunt1.png"
+  }
+  images {
+    image: "/assets/images/champs/kid_disco/kid_disco_taunt2.png"
+  }
+  images {
+    image: "/assets/images/champs/kid_disco/kid_disco_taunt3.png"
+  }
+  images {
+    image: "/assets/images/champs/kid_disco/kid_disco_taunt4.png"
+  }
+  images {
+    image: "/assets/images/champs/kid_disco/kid_disco_taunt5.png"
+  }
+  playback: PLAYBACK_ONCE_FORWARD
+  fps: 10
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "green_gorgon_taunt"
+  images {
+    image: "/assets/images/champs/green_gorgon/green_gorgon_taunt0.png"
+  }
+  images {
+    image: "/assets/images/champs/green_gorgon/green_gorgon_taunt1.png"
+  }
+  images {
+    image: "/assets/images/champs/green_gorgon/green_gorgon_taunt2.png"
+  }
+  images {
+    image: "/assets/images/champs/green_gorgon/green_gorgon_taunt3.png"
+  }
+  images {
+    image: "/assets/images/champs/green_gorgon/green_gorgon_taunt4.png"
+  }
+  playback: PLAYBACK_ONCE_FORWARD
+  fps: 10
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "gray_ape_taunt"
+  images {
+    image: "/assets/images/champs/gray_ape/gray_ape_taunt0.png"
+  }
+  images {
+    image: "/assets/images/champs/gray_ape/gray_ape_taunt1.png"
+  }
+  images {
+    image: "/assets/images/champs/gray_ape/gray_ape_taunt2.png"
+  }
+  images {
+    image: "/assets/images/champs/gray_ape/gray_ape_taunt3.png"
+  }
+  images {
+    image: "/assets/images/champs/gray_ape/gray_ape_taunt4.png"
+  }
+  images {
+    image: "/assets/images/champs/gray_ape/gray_ape_taunt5.png"
+  }
+  playback: PLAYBACK_ONCE_FORWARD
+  fps: 10
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "brett_amor_taunt"
+  images {
+    image: "/assets/images/champs/brett_amor/brett_amor_taunt0.png"
+  }
+  images {
+    image: "/assets/images/champs/brett_amor/brett_amor_taunt1.png"
+  }
+  images {
+    image: "/assets/images/champs/brett_amor/brett_amor_taunt2.png"
+  }
+  images {
+    image: "/assets/images/champs/brett_amor/brett_amor_taunt3.png"
+  }
+  images {
+    image: "/assets/images/champs/brett_amor/brett_amor_taunt4.png"
+  }
+  images {
+    image: "/assets/images/champs/brett_amor/brett_amor_taunt5.png"
+  }
+  playback: PLAYBACK_ONCE_FORWARD
+  fps: 10
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "terry_brogan_idle"
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_idle0.png"
+  }
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_idle1.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 2
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "terry_brogan_walk"
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_walk0.png"
+  }
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_walk1.png"
+  }
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_walk2.png"
+  }
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_walk3.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 10
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "terry_brogan_punch"
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_punch0.png"
+  }
+  playback: PLAYBACK_ONCE_FORWARD
+  fps: 1
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "brett_amor_walk"
+  images {
+    image: "/assets/images/champs/brett_amor/brett_amor_walk0.png"
+  }
+  images {
+    image: "/assets/images/champs/brett_amor/brett_amor_walk1.png"
+  }
+  images {
+    image: "/assets/images/champs/brett_amor/brett_amor_walk2.png"
+  }
+  images {
+    image: "/assets/images/champs/brett_amor/brett_amor_walk3.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 10
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "brett_amor_idle"
+  images {
+    image: "/assets/images/champs/brett_amor/brett_amor_idle0.png"
+  }
+  images {
+    image: "/assets/images/champs/brett_amor/brett_amor_idle1.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 2
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "brett_amor_punch"
+  images {
+    image: "/assets/images/champs/brett_amor/brett_amor_punch0.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 10
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "terry_brogan_down"
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_down0.png"
+  }
+  playback: PLAYBACK_ONCE_FORWARD
+  fps: 10
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "brett_amor_down"
+  images {
+    image: "/assets/images/champs/brett_amor/brett_amor_down0.png"
+  }
+  playback: PLAYBACK_ONCE_FORWARD
+  fps: 10
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "terry_brogan_kick"
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_kick0.png"
+  }
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_kick1.png"
+  }
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_kick2.png"
+  }
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_kick3.png"
+  }
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_kick4.png"
+  }
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_kick4.png"
+  }
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_kick4.png"
+  }
+  playback: PLAYBACK_ONCE_PINGPONG
+  fps: 15
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "terry_brogan_walk_lifting"
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_walk_lifting0.png"
+  }
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_walk_lifting1.png"
+  }
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_walk_lifting2.png"
+  }
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_walk_lifting3.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 10
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "terry_brogan_idle_lifting"
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_idle_lifting0.png"
+  }
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_idle_lifting1.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 2
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+margin: 0
+extrude_borders: 2
+inner_padding: 0
