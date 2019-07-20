@@ -333,6 +333,152 @@ animations {
   flip_horizontal: 0
   flip_vertical: 0
 }
+animations {
+  id: "brett_amor_idle_lifting"
+  images {
+    image: "/assets/images/champs/brett_amor/brett_amor_idle_lifting0.png"
+  }
+  images {
+    image: "/assets/images/champs/brett_amor/brett_amor_idle_lifting1.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 2
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "brett_amor_walk_lifting"
+  images {
+    image: "/assets/images/champs/brett_amor/brett_amor_walk_lifting0.png"
+  }
+  images {
+    image: "/assets/images/champs/brett_amor/brett_amor_walk_lifting1.png"
+  }
+  images {
+    image: "/assets/images/champs/brett_amor/brett_amor_walk_lifting2.png"
+  }
+  images {
+    image: "/assets/images/champs/brett_amor/brett_amor_walk_lifting3.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 10
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "mark_devotion_walk"
+  images {
+    image: "/assets/images/champs/mark_devotion/mark_devotion_walk0.png"
+  }
+  images {
+    image: "/assets/images/champs/mark_devotion/mark_devotion_walk1.png"
+  }
+  images {
+    image: "/assets/images/champs/mark_devotion/mark_devotion_walk2.png"
+  }
+  images {
+    image: "/assets/images/champs/mark_devotion/mark_devotion_walk3.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 10
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "mark_devotion_punch"
+  images {
+    image: "/assets/images/champs/mark_devotion/mark_devotion_punch0.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 10
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "mark_devotion_idle"
+  images {
+    image: "/assets/images/champs/mark_devotion/mark_devotion_idle0.png"
+  }
+  images {
+    image: "/assets/images/champs/mark_devotion/mark_devotion_idle1.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 2
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "mark_devotion_idle_lifting"
+  images {
+    image: "/assets/images/champs/mark_devotion/mark_devotion_idle_lifting0.png"
+  }
+  images {
+    image: "/assets/images/champs/mark_devotion/mark_devotion_idle_lifting1.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 10
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "mark_devotion_walk_lifting"
+  images {
+    image: "/assets/images/champs/mark_devotion/mark_devotion_walk_lifting0.png"
+  }
+  images {
+    image: "/assets/images/champs/mark_devotion/mark_devotion_walk_lifting1.png"
+  }
+  images {
+    image: "/assets/images/champs/mark_devotion/mark_devotion_walk_lifting2.png"
+  }
+  images {
+    image: "/assets/images/champs/mark_devotion/mark_devotion_walk_lifting3.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 10
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "mark_devotion_down"
+  images {
+    image: "/assets/images/champs/mark_devotion/mark_devotion_down0.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 10
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "brett_amor_portrait"
+  images {
+    image: "/assets/images/champs/brett_amor/brett_amor_idle0.png"
+  }
+  playback: PLAYBACK_ONCE_FORWARD
+  fps: 2
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "mark_devotion_portrait"
+  images {
+    image: "/assets/images/champs/mark_devotion/mark_devotion_idle0.png"
+  }
+  playback: PLAYBACK_ONCE_FORWARD
+  fps: 2
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "terry_brogan_portrait"
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_idle0.png"
+  }
+  playback: PLAYBACK_ONCE_FORWARD
+  fps: 2
+  flip_horizontal: 0
+  flip_vertical: 0
+}
 margin: 0
 extrude_borders: 2
 inner_padding: 0

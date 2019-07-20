@@ -19,7 +19,7 @@ function init(self)
 	self.champs = {
 		create_champ(-60, 0, 1, true, champs.TERRY_BROGAN),
 		create_champ(-20, 0, 2, false, champs.BRETT_AMOR),
-		create_champ(20, 0, 3, false, champs.TERRY_BROGAN),
+		create_champ(20, 0, 3, false, champs.MARK_DEVOTION),
 		create_champ(60, 0, 4, false, champs.TERRY_BROGAN),
 	}
 

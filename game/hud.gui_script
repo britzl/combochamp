@@ -1,3 +1,6 @@
+local champs = require "game.champs"
+
+
 function init(self)
 	self.champs = {}
 	for i=1,4 do
@@ -15,6 +18,7 @@ function on_message(self, message_id, message, sender)
 	if message_id == hash("champ") then
 		local champ = self.champs[message.id]
 		gui.set_enabled(champ.root, true)
+		gui.play_flipbook(champ.portrait, champs.get(message.champ).portrait)
 		gui.set_scale(champ.health, vmath.vector3(message.health, 1, 1))
 	end
 end

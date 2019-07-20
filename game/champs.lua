@@ -19,12 +19,14 @@ local function create_champ(name, animation_prefix)
 		walk_lifting = hash(animation_prefix .. "_walk_lifting"),
 		taunt = hash(animation_prefix .. "_taunt"),
 		down = hash(animation_prefix .. "_down"),
+		portrait = hash(animation_prefix .. "_portrait"),
 	}
 end
 
 local CHAMPS = {
 	[M.TERRY_BROGAN] = create_champ("Terry \"Hollywood\" Brogan", "terry_brogan"),
 	[M.BRETT_AMOR] = create_champ("Brett Amor", "brett_amor"),
+	[M.MARK_DEVOTION] = create_champ("Mark Devotion", "mark_devotion"),
 }
 
 function M.get(champ)
