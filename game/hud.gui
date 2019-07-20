@@ -70,7 +70,7 @@ nodes {
 nodes {
   position {
     x: 10.0
-    y: 10.0
+    y: 9.0
     z: 0.0
     w: 1.0
   }
@@ -140,14 +140,14 @@ nodes {
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "champs_a/announcer_mic"
+  texture: "champs/announcer_mic"
   id: "champ3/root"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
   pivot: PIVOT_CENTER
   adjust_mode: ADJUST_MODE_FIT
   parent: "champ3"
-  layer: ""
+  layer: "below"
   inherit_alpha: true
   slice9 {
     x: 0.0
@@ -195,14 +195,14 @@ nodes {
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "champs_a/brett_amor_idle"
+  texture: "champs/brett_amor_idle"
   id: "champ3/portrait"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
   pivot: PIVOT_CENTER
   adjust_mode: ADJUST_MODE_FIT
   parent: "champ3/root"
-  layer: ""
+  layer: "below"
   inherit_alpha: true
   slice9 {
     x: 0.0
@@ -220,7 +220,7 @@ nodes {
 nodes {
   position {
     x: 12.0
-    y: 0.0
+    y: 4.0
     z: 0.0
     w: 1.0
   }
@@ -257,7 +257,7 @@ nodes {
   pivot: PIVOT_W
   adjust_mode: ADJUST_MODE_FIT
   parent: "champ3/portrait"
-  layer: ""
+  layer: "below"
   inherit_alpha: true
   slice9 {
     x: 1.0
@@ -312,7 +312,7 @@ nodes {
   pivot: PIVOT_W
   adjust_mode: ADJUST_MODE_FIT
   parent: "champ3/health_bg"
-  layer: ""
+  layer: "below"
   inherit_alpha: true
   slice9 {
     x: 0.0
@@ -329,8 +329,71 @@ nodes {
 }
 nodes {
   position {
+    x: -9.0
+    y: 14.0
+    z: 0.0
+    w: 1.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+    z: 0.0
+    w: 1.0
+  }
+  color {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  type: TYPE_TEXT
+  blend_mode: BLEND_MODE_ALPHA
+  text: "<text>"
+  font: "game"
+  id: "champ3/name"
+  xanchor: XANCHOR_NONE
+  yanchor: YANCHOR_NONE
+  pivot: PIVOT_W
+  outline {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  shadow {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  adjust_mode: ADJUST_MODE_FIT
+  line_break: false
+  parent: "champ3/portrait"
+  layer: "text"
+  inherit_alpha: true
+  alpha: 1.0
+  outline_alpha: 1.0
+  shadow_alpha: 1.0
+  template_node_child: true
+  text_leading: 1.0
+  text_tracking: 0.0
+}
+nodes {
+  position {
     x: 10.0
-    y: 205.0
+    y: 195.0
     z: 0.0
     w: 1.0
   }
@@ -400,14 +463,14 @@ nodes {
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "champs_a/announcer_mic"
+  texture: "champs/announcer_mic"
   id: "champ1/root"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
   pivot: PIVOT_CENTER
   adjust_mode: ADJUST_MODE_FIT
   parent: "champ1"
-  layer: ""
+  layer: "below"
   inherit_alpha: true
   slice9 {
     x: 0.0
@@ -455,14 +518,14 @@ nodes {
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "champs_a/brett_amor_idle"
+  texture: "champs/brett_amor_idle"
   id: "champ1/portrait"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
   pivot: PIVOT_CENTER
   adjust_mode: ADJUST_MODE_FIT
   parent: "champ1/root"
-  layer: ""
+  layer: "below"
   inherit_alpha: true
   slice9 {
     x: 0.0
@@ -480,7 +543,7 @@ nodes {
 nodes {
   position {
     x: 12.0
-    y: 0.0
+    y: 4.0
     z: 0.0
     w: 1.0
   }
@@ -517,7 +580,7 @@ nodes {
   pivot: PIVOT_W
   adjust_mode: ADJUST_MODE_FIT
   parent: "champ1/portrait"
-  layer: ""
+  layer: "below"
   inherit_alpha: true
   slice9 {
     x: 1.0
@@ -572,7 +635,7 @@ nodes {
   pivot: PIVOT_W
   adjust_mode: ADJUST_MODE_FIT
   parent: "champ1/health_bg"
-  layer: ""
+  layer: "below"
   inherit_alpha: true
   slice9 {
     x: 0.0
@@ -589,8 +652,71 @@ nodes {
 }
 nodes {
   position {
+    x: -9.0
+    y: 14.0
+    z: 0.0
+    w: 1.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+    z: 0.0
+    w: 1.0
+  }
+  color {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  type: TYPE_TEXT
+  blend_mode: BLEND_MODE_ALPHA
+  text: "<text>"
+  font: "game"
+  id: "champ1/name"
+  xanchor: XANCHOR_NONE
+  yanchor: YANCHOR_NONE
+  pivot: PIVOT_W
+  outline {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  shadow {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  adjust_mode: ADJUST_MODE_FIT
+  line_break: false
+  parent: "champ1/portrait"
+  layer: "text"
+  inherit_alpha: true
+  alpha: 1.0
+  outline_alpha: 1.0
+  shadow_alpha: 1.0
+  template_node_child: true
+  text_leading: 1.0
+  text_tracking: 0.0
+}
+nodes {
+  position {
     x: 305.0
-    y: 205.0
+    y: 195.0
     z: 0.0
     w: 1.0
   }
@@ -660,14 +786,14 @@ nodes {
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "champs_a/announcer_mic"
+  texture: "champs/announcer_mic"
   id: "champ2/root"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
   pivot: PIVOT_CENTER
   adjust_mode: ADJUST_MODE_FIT
   parent: "champ2"
-  layer: ""
+  layer: "below"
   inherit_alpha: true
   slice9 {
     x: 0.0
@@ -715,14 +841,14 @@ nodes {
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "champs_a/brett_amor_idle"
+  texture: "champs/brett_amor_idle"
   id: "champ2/portrait"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
   pivot: PIVOT_CENTER
   adjust_mode: ADJUST_MODE_FIT
   parent: "champ2/root"
-  layer: ""
+  layer: "below"
   inherit_alpha: true
   slice9 {
     x: 0.0
@@ -740,7 +866,7 @@ nodes {
 nodes {
   position {
     x: 12.0
-    y: 0.0
+    y: 4.0
     z: 0.0
     w: 1.0
   }
@@ -777,7 +903,7 @@ nodes {
   pivot: PIVOT_W
   adjust_mode: ADJUST_MODE_FIT
   parent: "champ2/portrait"
-  layer: ""
+  layer: "below"
   inherit_alpha: true
   slice9 {
     x: 1.0
@@ -832,7 +958,7 @@ nodes {
   pivot: PIVOT_W
   adjust_mode: ADJUST_MODE_FIT
   parent: "champ2/health_bg"
-  layer: ""
+  layer: "below"
   inherit_alpha: true
   slice9 {
     x: 0.0
@@ -849,8 +975,71 @@ nodes {
 }
 nodes {
   position {
+    x: -9.0
+    y: 14.0
+    z: 0.0
+    w: 1.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+    z: 0.0
+    w: 1.0
+  }
+  color {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  type: TYPE_TEXT
+  blend_mode: BLEND_MODE_ALPHA
+  text: "<text>"
+  font: "game"
+  id: "champ2/name"
+  xanchor: XANCHOR_NONE
+  yanchor: YANCHOR_NONE
+  pivot: PIVOT_W
+  outline {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  shadow {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  adjust_mode: ADJUST_MODE_FIT
+  line_break: false
+  parent: "champ2/portrait"
+  layer: "text"
+  inherit_alpha: true
+  alpha: 1.0
+  outline_alpha: 1.0
+  shadow_alpha: 1.0
+  template_node_child: true
+  text_leading: 1.0
+  text_tracking: 0.0
+}
+nodes {
+  position {
     x: 305.0
-    y: 10.0
+    y: 9.0
     z: 0.0
     w: 1.0
   }
@@ -920,14 +1109,14 @@ nodes {
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "champs_a/announcer_mic"
+  texture: "champs/announcer_mic"
   id: "champ4/root"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
   pivot: PIVOT_CENTER
   adjust_mode: ADJUST_MODE_FIT
   parent: "champ4"
-  layer: ""
+  layer: "below"
   inherit_alpha: true
   slice9 {
     x: 0.0
@@ -975,14 +1164,14 @@ nodes {
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "champs_a/brett_amor_idle"
+  texture: "champs/brett_amor_idle"
   id: "champ4/portrait"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
   pivot: PIVOT_CENTER
   adjust_mode: ADJUST_MODE_FIT
   parent: "champ4/root"
-  layer: ""
+  layer: "below"
   inherit_alpha: true
   slice9 {
     x: 0.0
@@ -1000,7 +1189,7 @@ nodes {
 nodes {
   position {
     x: 12.0
-    y: 0.0
+    y: 4.0
     z: 0.0
     w: 1.0
   }
@@ -1037,7 +1226,7 @@ nodes {
   pivot: PIVOT_W
   adjust_mode: ADJUST_MODE_FIT
   parent: "champ4/portrait"
-  layer: ""
+  layer: "below"
   inherit_alpha: true
   slice9 {
     x: 1.0
@@ -1092,7 +1281,7 @@ nodes {
   pivot: PIVOT_W
   adjust_mode: ADJUST_MODE_FIT
   parent: "champ4/health_bg"
-  layer: ""
+  layer: "below"
   inherit_alpha: true
   slice9 {
     x: 0.0
@@ -1106,6 +1295,69 @@ nodes {
   alpha: 1.0
   template_node_child: true
   size_mode: SIZE_MODE_MANUAL
+}
+nodes {
+  position {
+    x: -9.0
+    y: 14.0
+    z: 0.0
+    w: 1.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+    z: 0.0
+    w: 1.0
+  }
+  color {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  type: TYPE_TEXT
+  blend_mode: BLEND_MODE_ALPHA
+  text: "<text>"
+  font: "game"
+  id: "champ4/name"
+  xanchor: XANCHOR_NONE
+  yanchor: YANCHOR_NONE
+  pivot: PIVOT_W
+  outline {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  shadow {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  adjust_mode: ADJUST_MODE_FIT
+  line_break: false
+  parent: "champ4/portrait"
+  layer: "text"
+  inherit_alpha: true
+  alpha: 1.0
+  outline_alpha: 1.0
+  shadow_alpha: 1.0
+  template_node_child: true
+  text_leading: 1.0
+  text_tracking: 0.0
 }
 material: "/builtins/materials/gui.material"
 adjust_reference: ADJUST_REFERENCE_PARENT
