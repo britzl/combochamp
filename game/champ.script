@@ -22,8 +22,11 @@ local logger = require "ludobits.m.logger"
 local log = nil
 
 local GROUP_ROPE = hash("rope")
+local GROUP_POST = hash("post")
+local GROUP_RING = hash("ring")
 local GROUP_CHAMP = hash("champ")
 local GROUP_ATTACK = hash("attack")
+local GROUP_SPECIAL = hash("special")
 
 local MSG_CONTACT_POINT_RESPONSE = hash("contact_point_response")
 local MSG_TRIGGER_RESPONSE = hash("trigger_response")
@@ -32,11 +35,34 @@ local MSG_DAMAGE = hash("damage")
 local MSG_LIFTED = hash("lifted")
 local MSG_THROWN = hash("thrown")
 
-local RUN_RATIO = 2
-local ROPE_BOUNCE_RATIO = 4
+local BOOST_THROW = 5
+local BOOST_NORMAL_DAMAGE = 2
+local BOOST_SPECIAL_DAMAGE = 10
+local BOOST_TAUNT = 1
+local BOOST_CLIMB_RING_POST = 2
+local BOOST_BOUNCE_ROPE = 2
+
+local RING_POST_TOPLEFT = hash("/post_topleft")
+local RING_POST_TOPRIGHT = hash("/post_topright")
+local RING_POST_BOTTOMLEFT = hash("/post_bottomleft")
+local RING_POST_BOTTOMRIGHT = hash("/post_bottomright")
+
+local RUN_RATIO = 4
+local ROPE_BOUNCE_RATIO = 8
 
 local V3_ZERO = vmath.vector3(0)
 local V3_ONE = vmath.vector3(1)
+local V3_TOPLEFT = vmath.vector3(-1, 1, 0)
+local V3_TOPRIGHT = vmath.vector3(1, 1, 0)
+local V3_BOTTOMLEFT = vmath.vector3(-1, -0.5, 0)
+local V3_BOTTOMRIGHT = vmath.vector3(1, -0.5, 0)
+
+local POST_TO_DIRECTION = {
+	[RING_POST_TOPLEFT] = V3_TOPLEFT,
+	[RING_POST_TOPRIGHT] = V3_TOPRIGHT,
+	[RING_POST_BOTTOMLEFT] = V3_BOTTOMLEFT,
+	[RING_POST_BOTTOMRIGHT] = V3_BOTTOMRIGHT,
+}
 
 local CHAMPS = {}
 
@@ -44,35 +70,21 @@ local function get_champ(id)
 	return CHAMPS[id or go.get_id()]
 end
 
-local function is_stunned(id)
-	return get_champ(id).stunned
-end
-
-local function is_down(id)
-	return get_champ(id).down
-end
-
-local function is_moving(id)
-	return not is_stunned(id) and not is_down(id) and vmath.length(get_champ(id).speed) > 1
-end
-
-local function is_running(id)
-	return get_champ(id).running
-end
-
-local function is_attacking(id)
-	return get_champ(id).attacking
-end
-
-local function is_lifting_champ(id)
-	return get_champ(id).lifting_champ
-end
-
+local function is_stunned(id) return get_champ(id).stunned end
+local function is_on_ring_post(id) return get_champ(id).on_ring_post end
+local function is_down(id) return get_champ(id).down end
+local function is_moving(id) return not is_stunned(id) and not is_down(id) and vmath.length(get_champ(id).speed) > 1 end
+local function is_running(id) return get_champ(id).running end
+local function is_attacking(id) return get_champ(id).attacking end
+local function is_lifting_champ(id) return get_champ(id).lifting_champ end
+local function is_jumping(id) return get_champ(id).jumping end
+local function is_busy(id) return get_champ(id).busy end
 local function is_idle(id)
 	return not is_moving(id)
 	and not is_attacking(id)
 	and not is_down(id)
 	and not is_running(id)
+	and not is_stunned(id)
 end
 
 local function stop(self)
@@ -113,7 +125,10 @@ local function update_hud(self)
 	msg.post("hud", "champ", {
 		id = self.id,
 		champ = self.champ,
+		boost = self.current_boost / self.max_boost,
 		health = self.current_stamina / self.initial_stamina,
+		health_max = self.max_stamina / self.initial_stamina,
+		in_ring = self.in_ring,
 	})
 end
 
@@ -126,11 +141,16 @@ local function direction(go1, go2)
 	end
 end
 
+local function increase_boost(self, amount)
+	self.current_boost = math.min(self.current_boost + amount, self.max_boost)
+	update_hud(self)
+end
 
 local function throw_champ(self)
 	if is_lifting_champ(id) then
 		sequence.run_once(function()
 			log("throw")
+			increase_boost(self, BOOST_THROW)
 			local pos = go.get_position()
 			local champ = self.lifting_champ
 			self.lifting_champ = nil
@@ -147,19 +167,84 @@ local function throw_champ(self)
 	end
 end
 
+local function lift_champ(self, champ)
+	log("lifing champ")
+	msg.post(champ, MSG_LIFTED)
+	self.lifting_champ = champ
+	go.set_parent(champ, go.get_id(), false)
+	go.set_position(vmath.vector3(0, 14, 0), champ)
+end
+
+local function climb_ring_post(self, post)
+	sequence.run_once(function()
+		if is_lifting_champ() then
+			throw_champ(self)
+		end
+		increase_boost(self, BOOST_CLIMB_RING_POST)
+		self.busy = true
+		self.on_ring_post = true
+		self.ring_post_id = post
+		stop(self)
+		local to = go.get_world_position(post) + vmath.vector3(0, 5, 0)
+		sequence.go_animate(".", "position", go.PLAYBACK_ONCE_FORWARD, to, go.EASING_LINEAR, 0.2)
+		disable("#shadow")
+		disable("#champcollider")
+		play_flipbook(self, "idle_lifting")
+		self.busy = false
+	end)
+end
+
+local function jump_from_ring_post(self)
+	enable("#shadow")
+	enable("#champcollider")
+	sequence.run_once(function()
+		self.jumping = true
+		self.on_ring_post = false
+
+		play_flipbook(self, "back")
+
+		-- jump animation
+		-- different easings on x and y will make the movement in an arc instead of
+		-- a straight line
+		local to = go.get_position()
+		local dir = POST_TO_DIRECTION[self.ring_post_id]
+		to = to - dir * 30
+		if dir.y < 0 then
+			go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD, to.x, go.EASING_LINEAR, 0.2)
+			go.animate(".", "position.y", go.PLAYBACK_ONCE_FORWARD, to.y, go.EASING_OUTQUAD, 0.2)
+		else
+			go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD, to.x, go.EASING_LINEAR, 0.2)
+			go.animate(".", "position.y", go.PLAYBACK_ONCE_FORWARD, to.y, go.EASING_INQUAD, 0.2)
+		end
+		sequence.delay(0.2)
+
+		-- bounce when landing and enable special attack
+		to = to + vmath.vector3(0,5,0)
+		enable("#specialattack")
+		self.attacking = true
+		sequence.go_animate(".", "position", go.PLAYBACK_ONCE_PINGPONG, to, go.EASING_INOUTQUAD, 0.1)
+		self.attacking = false
+		disable("#specialattack")
+
+		-- delay before standing up
+		sequence.delay(0.5)
+		self.jumping = false
+	end)
+end
+
 local function handle_action(self, action_id, action)
 	self.state.on_input(action_id, action)
 
-	if self.stunned then
+	if is_stunned() or is_down() then
 		return
 	end
 
 	local now = socket.gettime()
 
 	-- run
-	if actions.is_movement(action_id) and action.pressed then
+	if actions.is_movement(action_id) and not is_on_ring_post() and action.pressed then
 		-- stop running if trying to move again in other direction
-		if self.running then
+		if is_running() then
 			if self.speed.x > 0 and action_id ~= actions.RIGHT
 			or self.speed.x < 0 and action_id ~= actions.LEFT
 			or self.speed.y > 0 and action_id ~= actions.UP
@@ -184,21 +269,20 @@ local function handle_action(self, action_id, action)
 	elseif action_id == actions.A then
 		if action.pressed then
 			local nearby = next(self.nearby)
-			if is_lifting_champ(id) then
+			if is_lifting_champ() then
 				throw_champ(self)
 			elseif nearby and is_down(nearby) then
-				log("lifing champ")
-				msg.post(nearby, MSG_LIFTED)
-				self.lifting_champ = nearby
-				go.set_parent(nearby, go.get_id(), false)
-				go.set_position(vmath.vector3(0, 14, 0), nearby)
+				lift_champ(self, nearby)
+			elseif is_on_ring_post() then
+				jump_from_ring_post(self)
 			else
 				log("punch")
 				sequence.run_once(function()
-					if self.attacking then
+					if is_attacking() then
+						log("punch - already attacking")
 						return
 					end
-					if not self.running then
+					if not is_running() then
 						stop(self)
 					end
 					self.attacking = true
@@ -212,18 +296,32 @@ local function handle_action(self, action_id, action)
 				end)
 			end
 		end
-	-- kick
-	elseif action_id == actions.B and action.pressed then
-		sequence.run_once(function()
-			self.attacking = true
-			stop(self)
-			enable_side(self, "#leftattack", "#rightattack")
-			play_flipbook(self, "kick")
-			sequence.delay(1.0)
-			disable("#leftattack")
-			disable("#rightattack")
-			self.attacking = false
-		end)
+	elseif action_id == actions.B then
+		if action.pressed then
+			local nearby = next(self.nearby)
+			if not nearby then
+				log("taunt")
+				sequence.run_once(function()
+					increase_boost(self, BOOST_TAUNT)
+					self.busy = true
+					play_flipbook(self, "taunt")
+					sequence.delay(1)
+					self.busy = false
+				end)
+			elseif is_down(nearby) then
+				-- pin opponent
+			end
+			--[[sequence.run_once(function()
+				self.attacking = true
+				stop(self)
+				enable_side(self, "#leftattack", "#rightattack")
+				play_flipbook(self, "kick")
+				sequence.delay(1.0)
+				disable("#leftattack")
+				disable("#rightattack")
+				self.attacking = false
+			end)--]]
+		end
 	end
 
 	-- update last action
@@ -263,6 +361,9 @@ local function start_ai(self)
 			target = nil
 			handle_action(self, actions.A, actions.ACTION_PRESSED)
 			handle_action(self, actions.A, actions.ACTION_RELEASED)
+		elseif math.random(1,10) == 9 then
+			handle_action(self, actions.B, actions.ACTION_PRESSED)
+			handle_action(self, actions.B, actions.ACTION_RELEASED)
 		else
 			if dir.x > 0 then
 				handle_action(self, actions.RIGHT, actions.ACTION_PRESSED)
@@ -289,17 +390,33 @@ local function start_ai(self)
 	end)
 end
 
+local function regenerate_damage(self, dt)
+	local ratio = self.max_stamina / self.initial_stamina
+	if is_down() and self.max_stamina > 0 then
+		self.current_stamina = math.min(self.current_stamina + 10 * ratio * dt, self.max_stamina)
+		if self.current_stamina == self.max_stamina then
+			play_flipbook(self, "idle")
+			self.down = false
+		end
+	else
+		self.current_stamina = math.min(self.current_stamina + 3 * ratio * dt, self.max_stamina)
+		--self.max_stamina = math.min(self.max_stamina + 1 * ratio * dt, self.initial_stamina)
+	end
+	update_hud(self)
+end
+
 local function take_damage(self, amount, source, props)
+	if self.down then
+		return
+	end
 	self.current_stamina = math.max(self.current_stamina - amount, 0)
 	if self.current_stamina == 0 then
+		self.max_stamina = math.max(self.max_stamina - self.initial_stamina * 0.2, 0)
 		sequence.run_once(function()
 			log("down")
 			self.down = true
 			throw_champ(self)
 			play_flipbook(self, "down")
-			sequence.go_animate("#", "current_stamina", go.PLAYBACK_ONCE_FORWARD, self.initial_stamina, go.EASING_LINEAR, 5)
-			play_flipbook(self, "idle")
-			self.down = false
 		end)
 	end
 	update_hud(self)
@@ -309,17 +426,17 @@ local function take_damage(self, amount, source, props)
 		self.stunned = true
 		local left = (go.get_position() - go.get_position(source)).x > 0
 		enable(left and "#lefthit" or "#righthit")
-		sequence.delay(0.15)
+		sequence.delay(0.25)
 		disable(left and "#lefthit" or "#righthit")
 		self.stunned = false
 	end)
 
 	-- pushback
 	sequence.run_once(function()
-		self.current_max_speed = self.initial_max_speed * 2
+		self.current_max_speed = self.initial_max_speed * 6
 		self.current_speed_lerp = 0
 		self.speed = (props.pushback or V3_ONE) * self.current_max_speed
-		sequence.delay(0.1)
+		sequence.delay(0.10)
 		self.current_speed_lerp = self.initial_speed_lerp
 		self.current_max_speed = self.initial_max_speed
 	end)
@@ -331,6 +448,7 @@ function init(self)
 	CHAMPS[go.get_id()] = self
 	CHAMPS[#CHAMPS + 1] = { id = go.get_id(), instance = self }
 	self.nearby = {}
+	self.in_ring = false
 	self.last_action_time = nil
 	self.last_action = nil
 	self.direction = directions.NONE
@@ -339,11 +457,15 @@ function init(self)
 	self.current_speed_lerp = self.initial_speed_lerp
 	self.current_max_speed = self.initial_max_speed
 	self.current_stamina = self.initial_stamina
+	self.max_stamina = self.initial_stamina
+	self.current_boost = 0
+	self.max_boost = 100
 	self.champ_data = champs.get(self.champ)
 	disable("#leftattack")
 	disable("#rightattack")
 	disable("#lefthit")
 	disable("#righthit")
+	disable("#specialattack")
 	if self.player then
 		msg.post(".", "acquire_input_focus")
 	end
@@ -364,7 +486,8 @@ function final(self)
 end
 
 function update(self, dt)
-	local can_move = not is_attacking() and not is_stunned() and not is_down()
+	regenerate_damage(self, dt)
+	local can_move = not is_attacking() and not is_stunned() and not is_down() and not is_on_ring_post() and not is_busy()
 	if self.state.is_pressed(actions.LEFT) and can_move then
 		self.speed.x = self.speed.x - self.acceleration * dt
 		self.direction = directions.LEFT
@@ -387,8 +510,10 @@ function update(self, dt)
 		self.speed.y = vmath.lerp(self.current_speed_lerp, self.speed.y, 0)
 	end
 
-	if not is_attacking() then
-		if is_idle() then
+	if not is_attacking() and not is_jumping() then
+		if is_on_ring_post() then
+			play_flipbook(self, "taunt")
+		elseif is_idle() then
 			play_flipbook(self, is_lifting_champ() and "idle_lifting" or "idle")
 		elseif is_moving() then
 			play_flipbook(self, is_lifting_champ() and "walk_lifting" or "walk")
@@ -402,6 +527,9 @@ function update(self, dt)
 	local pos = go.get_position()
 	pos = pos + self.speed * dt
 	pos.z = 1 - pos.y / 640
+	if is_on_ring_post() then
+		pos.z = pos.z + 5
+	end
 	go.set_position(pos)
 	update_hud(self)
 end
@@ -410,53 +538,81 @@ function on_message(self, message_id, message, sender)
 	if message_id == MSG_CONTACT_POINT_RESPONSE then
 		-- this champ ran into the rope
 		if message.other_group == GROUP_ROPE then
-			if message.distance > 0 then
-				-- bounce on the rope
-				if is_running() then
-					-- increase speed and animate back to previous speed
-					local current_max_speed = self.current_max_speed
-					self.current_max_speed = self.initial_max_speed * ROPE_BOUNCE_RATIO
-					go.animate("#", "current_max_speed", go.PLAYBACK_ONCE_FORWARD, current_max_speed, go.EASING_LINEAR, 0.5)
-					-- flip direction
-					local horizontal = math.abs(message.normal.x) > math.abs(message.normal.y)
-					if horizontal then
-						self.speed.x = (message.normal.x > 0) and self.current_max_speed or -self.current_max_speed
-						self.direction = (message.normal.x > 0) and directions.RIGHT or directions.LEFT
-						update_sprite_flip(self)
+			if is_on_ring_post() then
+				return
+			end
+			if self.in_ring then
+				if message.distance > 0 then
+					-- bounce on the rope
+					if is_running() then
+						increase_boost(self, BOOST_BOUNCE_ROPE)
+						-- increase speed and animate back to previous speed
+						local current_max_speed = self.current_max_speed
+						self.current_max_speed = self.initial_max_speed * ROPE_BOUNCE_RATIO
+						go.animate("#", "current_max_speed", go.PLAYBACK_ONCE_FORWARD, current_max_speed, go.EASING_LINEAR, 0.5)
+						-- flip direction
+						local horizontal = math.abs(message.normal.x) > math.abs(message.normal.y)
+						if horizontal then
+							self.speed.x = (message.normal.x > 0) and self.current_max_speed or -self.current_max_speed
+							self.direction = (message.normal.x > 0) and directions.RIGHT or directions.LEFT
+							update_sprite_flip(self)
+						else
+							self.speed.y = (message.normal.y > 0) and self.current_max_speed or -self.current_max_speed
+							self.direction = (message.normal.y > 0) and directions.UP or directions.DOWN
+						end
+						-- stop running after a certain period of time has elapsed
+						self.run_timer = timer.delay(0.6, false, function()
+							stop(self)
+							self.running = false
+						end)
+					-- stop at the rope
 					else
-						self.speed.y = (message.normal.y > 0) and self.current_max_speed or -self.current_max_speed
-						self.direction = (message.normal.y > 0) and directions.UP or directions.DOWN
+						go.set_position(go.get_position() + message.normal * message.distance)
 					end
-					-- stop running after a certain period of time has elapsed
-					self.run_timer = timer.delay(0.6, false, function()
-						stop(self)
-						self.running = false
-					end)
-				-- stop at the rope
-				else
-					go.set_position(go.get_position() + message.normal * message.distance)
 				end
+			-- get back into ring
+			else
+				local pos = go.get_position()
+				pos = pos + message.normal * 30
+				go.animate(".", "position", go.PLAYBACK_ONCE_FORWARD, pos, go.EASING_INOUTQUAD, 0.4)
 			end
 		-- this champ hit another champ
 		elseif message.own_group == GROUP_ATTACK and message.other_group == GROUP_CHAMP and is_attacking() then
 			local dir = direction(go.get_id(), message.other_id)
 			if is_running() then
 				log("clothesline!")
+				increase_boost(self, BOOST_SPECIAL_DAMAGE)
 				msg.post(message.other_id, MSG_DAMAGE, { amount = 30, pushback = dir })
 			else
 				log("hit!")
+				increase_boost(self, BOOST_NORMAL_DAMAGE)
 				msg.post(message.other_id, MSG_DAMAGE, { amount = 10, pushback = dir })
 				stop(self)
 			end
 			self.attacking = false
+		-- this champ hit another champ with a special attack
+		elseif message.own_group == GROUP_SPECIAL and message.other_group == GROUP_CHAMP then
+			increase_boost(self, BOOST_SPECIAL_DAMAGE)
+			msg.post(message.other_id, MSG_DAMAGE, { amount = 50 })
+			self.attacking = false
+		elseif message.other_group == GROUP_POST then
+			if not is_on_ring_post() then
+				climb_ring_post(self, message.other_id)
+			end
 		end
 	elseif message_id == MSG_TRIGGER_RESPONSE then
-		if go.get_id() ~= message.other_id then
-			if message.enter then
-				self.nearby[message.other_id] = true
-			else
-				self.nearby[message.other_id] = nil
+		-- nearby another champ
+		if message.other_group == GROUP_CHAMP then
+			if go.get_id() ~= message.other_id then
+				if message.enter then
+					self.nearby[message.other_id] = true
+				else
+					self.nearby[message.other_id] = nil
+				end
 			end
+		-- inside ring
+		elseif message.other_group == GROUP_RING then
+			self.in_ring = message.enter
 		end
 	elseif message_id == MSG_DAMAGE then
 		take_damage(self, message.amount, sender, message)
@@ -464,6 +620,7 @@ function on_message(self, message_id, message, sender)
 		log("lifted")
 		disable("#shadow")
 		disable("#champcollider")
+		self.lifted = true
 	elseif message_id == MSG_THROWN then
 		log("thrown")
 		enable("#shadow")

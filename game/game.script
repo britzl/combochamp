@@ -3,11 +3,14 @@ local actions = require "game.actions"
 local champs = require "game.champs"
 
 local function create_champ(x, y, id, player, champ)
+	local data = champs.get(champ)
 	local pos = vmath.vector3(x, y, 0)
 	local props = {
 		player = player,
 		id = id,
 		champ = champ,
+		initial_max_speed = data.speed,
+		initial_stamina = data.stamina,
 	}
 	pprint(props)
 	return factory.create("#champfactory", pos, nil, props)
@@ -17,10 +20,11 @@ function init(self)
 	msg.post("@render:", "clear_color", { color = vmath.vector4(0.3, 0.3, 0.3, 1.0) })
 	
 	self.champs = {
+		--create_champ(-60, -40, 1, true, champs.TERRY_BROGAN),
 		create_champ(-60, 0, 1, true, champs.TERRY_BROGAN),
 		create_champ(-20, 0, 2, false, champs.BRETT_AMOR),
 		create_champ(20, 0, 3, false, champs.MARK_DEVOTION),
-		create_champ(60, 0, 4, false, champs.TERRY_BROGAN),
+		create_champ(60, 0, 4, false, champs.GREEN_GORGON),
 	}
 
 	--[[

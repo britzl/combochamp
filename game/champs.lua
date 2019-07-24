@@ -8,25 +8,41 @@ M.KID_DISCO = hash("kid_disco")
 M.MARK_DEVOTION = hash("mark_devotion")
 
 
-local function create_champ(name, animation_prefix)
-	return {
-		name = name,
-		punch = hash(animation_prefix .. "_punch"),
-		kick = hash(animation_prefix .. "_kick"),
-		idle = hash(animation_prefix .. "_idle"),
-		idle_lifting = hash(animation_prefix .. "_idle_lifting"),
-		walk = hash(animation_prefix .. "_walk"),
-		walk_lifting = hash(animation_prefix .. "_walk_lifting"),
-		taunt = hash(animation_prefix .. "_taunt"),
-		down = hash(animation_prefix .. "_down"),
-		portrait = hash(animation_prefix .. "_portrait"),
-	}
+local function create_champ(animation_prefix, props)
+	props.punch = hash(animation_prefix .. "_punch")
+	props.kick = hash(animation_prefix .. "_kick")
+	props.idle = hash(animation_prefix .. "_idle")
+	props.idle_lifting = hash(animation_prefix .. "_idle_lifting")
+	props.walk = hash(animation_prefix .. "_walk")
+	props.walk_lifting = hash(animation_prefix .. "_walk_lifting")
+	props.taunt = hash(animation_prefix .. "_taunt")
+	props.back = hash(animation_prefix .. "_back")
+	props.down = hash(animation_prefix .. "_down")
+	props.portrait = hash(animation_prefix .. "_portrait")
+	return props
 end
 
 local CHAMPS = {
-	[M.TERRY_BROGAN] = create_champ("Terry \"Hollywood\" Brogan", "terry_brogan"),
-	[M.BRETT_AMOR] = create_champ("Brett Amor", "brett_amor"),
-	[M.MARK_DEVOTION] = create_champ("Mark Devotion", "mark_devotion"),
+	[M.TERRY_BROGAN] = create_champ("terry_brogan", {
+		name = "Terry \"Hollywood\" Brogan",
+		speed = 20,
+		stamina = 1000,
+	}),
+	[M.BRETT_AMOR] = create_champ("brett_amor", {
+		name = "Brett Amor",
+		speed = 25,
+		stamina = 120,
+	}),
+	[M.MARK_DEVOTION] = create_champ("mark_devotion", {
+		name = "Mark Devotion",
+		speed = 40,
+		stamina = 50,
+	}),
+	[M.GREEN_GORGON] = create_champ("green_gorgon", {
+		name = "Green Gorgon",
+		speed = 35,
+		stamina = 75,
+	}),
 }
 
 function M.get(champ)
