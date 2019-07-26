@@ -73,12 +73,17 @@ end
 local function is_stunned(id) return get_champ(id).stunned end
 local function is_on_ring_post(id) return get_champ(id).on_ring_post end
 local function is_down(id) return get_champ(id).down end
-local function is_moving(id) return not is_stunned(id) and not is_down(id) and vmath.length(get_champ(id).speed) > 1 end
 local function is_running(id) return get_champ(id).running end
 local function is_attacking(id) return get_champ(id).attacking end
 local function is_lifting_champ(id) return get_champ(id).lifting_champ end
 local function is_jumping(id) return get_champ(id).jumping end
 local function is_busy(id) return get_champ(id).busy end
+local function is_moving(id)
+	local speed = get_champ(id).speed
+	return not is_stunned(id)
+	and not is_down(id)
+	and (speed.x ~= 0 or speed.y ~= 0)
+end
 local function is_idle(id)
 	return not is_moving(id)
 	and not is_attacking(id)
@@ -189,13 +194,11 @@ local function climb_ring_post(self, post)
 		sequence.go_animate(".", "position", go.PLAYBACK_ONCE_FORWARD, to, go.EASING_LINEAR, 0.2)
 		disable("#shadow")
 		disable("#champcollider")
-		play_flipbook(self, "idle_lifting")
 		self.busy = false
 	end)
 end
 
 local function jump_from_ring_post(self)
-	enable("#shadow")
 	enable("#champcollider")
 	sequence.run_once(function()
 		self.jumping = true
@@ -215,6 +218,7 @@ local function jump_from_ring_post(self)
 		else
 			go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD, to.x, go.EASING_LINEAR, 0.2)
 			go.animate(".", "position.y", go.PLAYBACK_ONCE_FORWARD, to.y, go.EASING_INQUAD, 0.2)
+			sprite.set_vflip("#sprite", true)
 		end
 		sequence.delay(0.2)
 
@@ -228,6 +232,8 @@ local function jump_from_ring_post(self)
 
 		-- delay before standing up
 		sequence.delay(0.5)
+		sprite.set_vflip("#sprite", false)
+		enable("#shadow")
 		self.jumping = false
 	end)
 end
@@ -341,7 +347,7 @@ local function start_ai(self)
 		
 		if not target then
 			target = CHAMPS[math.random(1, #CHAMPS)]
-			if target.id == go.get_id() or is_down(target.id) then
+			if target.id == go.get_id() or is_down(target.id) or is_on_ring_post(target.id) then
 				target = nil
 			end
 		end
@@ -355,7 +361,7 @@ local function start_ai(self)
 		local diff = target_pos - pos
 		local distance = vmath.length(diff)
 		local dir = vmath.normalize(diff)
-		if distance < 15 then
+		if distance < 15 or is_on_ring_post() then
 			handle_action(self, actions.LEFT, actions.ACTION_RELEASED)
 			handle_action(self, actions.RIGHT, actions.ACTION_RELEASED)
 			target = nil
@@ -516,6 +522,7 @@ function update(self, dt)
 		elseif is_idle() then
 			play_flipbook(self, is_lifting_champ() and "idle_lifting" or "idle")
 		elseif is_moving() then
+			--log("WALK DAMMIT", self.speed)
 			play_flipbook(self, is_lifting_champ() and "walk_lifting" or "walk")
 		end
 	end
@@ -538,7 +545,7 @@ function on_message(self, message_id, message, sender)
 	if message_id == MSG_CONTACT_POINT_RESPONSE then
 		-- this champ ran into the rope
 		if message.other_group == GROUP_ROPE then
-			if is_on_ring_post() then
+			if is_on_ring_post() or is_jumping() then
 				return
 			end
 			if self.in_ring then
@@ -577,7 +584,9 @@ function on_message(self, message_id, message, sender)
 				go.animate(".", "position", go.PLAYBACK_ONCE_FORWARD, pos, go.EASING_INOUTQUAD, 0.4)
 			end
 		-- this champ hit another champ
-		elseif message.own_group == GROUP_ATTACK and message.other_group == GROUP_CHAMP and is_attacking() then
+		elseif message.own_group == GROUP_ATTACK
+		and message.other_group == GROUP_CHAMP
+		and is_attacking() then
 			local dir = direction(go.get_id(), message.other_id)
 			if is_running() then
 				log("clothesline!")
@@ -591,7 +600,9 @@ function on_message(self, message_id, message, sender)
 			end
 			self.attacking = false
 		-- this champ hit another champ with a special attack
-		elseif message.own_group == GROUP_SPECIAL and message.other_group == GROUP_CHAMP then
+		elseif message.own_group == GROUP_SPECIAL
+		and message.other_group == GROUP_CHAMP
+		and message.other_id ~= go.get_id() then
 			increase_boost(self, BOOST_SPECIAL_DAMAGE)
 			msg.post(message.other_id, MSG_DAMAGE, { amount = 50 })
 			self.attacking = false
