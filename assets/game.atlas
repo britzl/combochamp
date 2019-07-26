@@ -1,32 +1,38 @@
 images {
-  image: "/assets/images/ring.png"
+  image: "/assets/images/ring/ring.png"
 }
 images {
-  image: "/assets/images/ropepost_topleft.png"
+  image: "/assets/images/ring/ropepost_topleft.png"
 }
 images {
-  image: "/assets/images/ropepost_topright.png"
+  image: "/assets/images/ring/ropepost_topright.png"
 }
 images {
-  image: "/assets/images/ropepost_bottomleft.png"
+  image: "/assets/images/ring/ropepost_bottomleft.png"
 }
 images {
-  image: "/assets/images/ropepost_bottomright.png"
+  image: "/assets/images/ring/ropepost_bottomright.png"
 }
 images {
-  image: "/assets/images/rope_horizontal.png"
+  image: "/assets/images/ring/rope_horizontal.png"
 }
 images {
-  image: "/assets/images/rope_vertical.png"
+  image: "/assets/images/ring/rope_vertical.png"
 }
 images {
-  image: "/assets/images/hit1.png"
+  image: "/assets/images/champs/hit1.png"
 }
 images {
-  image: "/assets/images/health_bg.png"
+  image: "/assets/images/hud/health_bg.png"
 }
 images {
   image: "/assets/images/transparent1px.png"
+}
+images {
+  image: "/assets/images/ring/rope_horizontal_blue.png"
+}
+images {
+  image: "/assets/images/ring/rope_horizontal_red.png"
 }
 margin: 0
 extrude_borders: 2

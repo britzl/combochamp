@@ -20,7 +20,7 @@ images {
   image: "/assets/images/referee/referee_arm_up.png"
 }
 images {
-  image: "/assets/images/shadow.png"
+  image: "/assets/images/champs/shadow.png"
 }
 animations {
   id: "terry_brogan_taunt"

@@ -311,8 +311,8 @@ nodes {
     w: 1.0
   }
   size {
-    x: 200.0
-    y: 100.0
+    x: 80.0
+    y: 12.0
     z: 0.0
     w: 1.0
   }
@@ -343,7 +343,7 @@ nodes {
     w: 1.0
   }
   adjust_mode: ADJUST_MODE_FIT
-  line_break: false
+  line_break: true
   parent: "portrait"
   layer: "text"
   inherit_alpha: true
