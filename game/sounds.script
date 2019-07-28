@@ -19,7 +19,7 @@ function init(self)
 end
 
 function update(self, dt)
-	self.cheer_gain = math.max(self.cheer_gain - 0.1 * dt, 0)
+	self.cheer_gain = math.max(self.cheer_gain - 0.2 * dt, 0)
 	soundcontroller.set_gain(sounds.AUDIENCE, self.audience_gain)
 	soundcontroller.set_gain(sounds.CHEER, self.cheer_gain)
 end

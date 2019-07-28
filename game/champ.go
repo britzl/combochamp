@@ -47,6 +47,7 @@ embedded_components {
   "mask: \"champ\"\n"
   "mask: \"attack\"\n"
   "mask: \"special\"\n"
+  "mask: \"referee\"\n"
   "embedded_collision_shape {\n"
   "  shapes {\n"
   "    shape_type: TYPE_SPHERE\n"

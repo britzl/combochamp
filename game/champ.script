@@ -19,18 +19,11 @@ local sequence = require "ludobits.m.sequence"
 local champs = require "game.champs"
 local logger = require "ludobits.m.logger"
 local sounds = require "game.sounds"
+local groups = require "game.groups"
+local messages = require "game.messages"
 
 local log = nil
 
-local GROUP_ROPE = hash("rope")
-local GROUP_POST = hash("post")
-local GROUP_RING = hash("ring")
-local GROUP_CHAMP = hash("champ")
-local GROUP_ATTACK = hash("attack")
-local GROUP_SPECIAL = hash("special")
-
-local MSG_CONTACT_POINT_RESPONSE = hash("contact_point_response")
-local MSG_TRIGGER_RESPONSE = hash("trigger_response")
 local MSG_DOWN = hash("down")
 local MSG_DAMAGE = hash("damage")
 local MSG_LIFTED = hash("lifted")
@@ -91,6 +84,7 @@ local function is_idle(id)
 	and not is_down(id)
 	and not is_running(id)
 	and not is_stunned(id)
+	and not is_busy(id)
 end
 
 local function stop(self)
@@ -241,6 +235,24 @@ local function jump_from_ring_post(self)
 	end)
 end
 
+local function attack(self)
+	log("punch")
+	sequence.run_once(function()
+		if not is_running() then
+			stop(self)
+		end
+		self.attacking = true
+		sounds.miss()
+		enable_side(self, "#leftattack", "#rightattack")
+		play_flipbook(self, "punch")
+		sequence.go_animate(".", "position", go.PLAYBACK_ONCE_FORWARD, go.get_position() + self.direction * 5, go.EASING_INQUAD, 0.1)
+		sequence.delay(0.1)
+		disable("#leftattack")
+		disable("#rightattack")
+		self.attacking = false
+	end)
+end
+
 local function handle_action(self, action_id, action)
 	self.state.on_input(action_id, action)
 
@@ -284,26 +296,8 @@ local function handle_action(self, action_id, action)
 				lift_champ(self, nearby)
 			elseif is_on_ring_post() then
 				jump_from_ring_post(self)
-			else
-				log("punch")
-				sequence.run_once(function()
-					if is_attacking() then
-						log("punch - already attacking")
-						return
-					end
-					if not is_running() then
-						stop(self)
-					end
-					self.attacking = true
-					sounds.miss()
-					enable_side(self, "#leftattack", "#rightattack")
-					play_flipbook(self, "punch")
-					sequence.go_animate(".", "position", go.PLAYBACK_ONCE_FORWARD, go.get_position() + self.direction * 5, go.EASING_INQUAD, 0.1)
-					sequence.delay(0.1)
-					disable("#leftattack")
-					disable("#rightattack")
-					self.attacking = false
-				end)
+			elseif not is_attacking() then
+				attack(self)
 			end
 		end
 	elseif action_id == actions.B then
@@ -314,12 +308,26 @@ local function handle_action(self, action_id, action)
 				sequence.run_once(function()
 					increase_boost(self, BOOST_TAUNT)
 					self.busy = true
+					stop(self)
 					play_flipbook(self, "taunt")
 					sequence.delay(1)
 					self.busy = false
 				end)
 			elseif is_down(nearby) then
+				log("pin")
 				-- pin opponent
+				sequence.run_once(function()
+					self.busy = true
+					stop(self)
+					local to = go.get_position(nearby)
+					to.y = to.y - 1
+					go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD, to.x, go.EASING_INOUTQUAD, 0.3)
+					go.animate(".", "position.y", go.PLAYBACK_ONCE_FORWARD, to.y, go.EASING_OUTBOUNCE, 0.5)
+					play_flipbook(self, "back")
+					msg.post("/referee", "pin", { champ = go.get_id(), pinned = nearby })
+					sequence.delay(4)
+					self.busy = false
+				end)
 			end
 			--[[sequence.run_once(function()
 				self.attacking = true
@@ -401,16 +409,16 @@ local function start_ai(self)
 end
 
 local function regenerate_damage(self, dt)
-	local ratio = self.max_stamina / self.initial_stamina
 	if is_down() and self.max_stamina > 0 then
-		self.current_stamina = math.min(self.current_stamina + 10 * ratio * dt, self.max_stamina)
+		local amount = self.max_stamina / 10
+		self.current_stamina = math.min(self.current_stamina + amount * dt, self.max_stamina)
 		if self.current_stamina == self.max_stamina then
 			play_flipbook(self, "idle")
 			self.down = false
 		end
 	else
-		self.current_stamina = math.min(self.current_stamina + 3 * ratio * dt, self.max_stamina)
-		--self.max_stamina = math.min(self.max_stamina + 1 * ratio * dt, self.initial_stamina)
+		local amount = self.max_stamina / 30
+		self.current_stamina = math.min(self.current_stamina + amount * dt, self.max_stamina)
 	end
 	update_hud(self)
 end
@@ -549,9 +557,9 @@ function update(self, dt)
 end
 
 function on_message(self, message_id, message, sender)
-	if message_id == MSG_CONTACT_POINT_RESPONSE then
+	if message_id == messages.CONTACT_POINT_RESPONSE then
 		-- this champ ran into the rope
-		if message.other_group == GROUP_ROPE then
+		if message.other_group == groups.ROPE then
 			if is_on_ring_post() or is_jumping() then
 				return
 			end
@@ -591,9 +599,9 @@ function on_message(self, message_id, message, sender)
 				go.animate(".", "position", go.PLAYBACK_ONCE_FORWARD, pos, go.EASING_INOUTQUAD, 0.4)
 			end
 		-- this champ hit another champ
-		elseif message.own_group == GROUP_ATTACK
-		and message.other_group == GROUP_CHAMP
-		and is_attacking() then
+		elseif message.own_group == groups.ATTACK
+		and message.other_group == groups.CHAMP
+		and is_attacking() and not is_down(message.other_id) then
 			local dir = direction(go.get_id(), message.other_id)
 			if is_running() then
 				log("clothesline!")
@@ -609,21 +617,21 @@ function on_message(self, message_id, message, sender)
 			end
 			self.attacking = false
 		-- this champ hit another champ with a special attack
-		elseif message.own_group == GROUP_SPECIAL
-		and message.other_group == GROUP_CHAMP
+		elseif message.own_group == groups.SPECIAL
+		and message.other_group == groups.CHAMP
 		and message.other_id ~= go.get_id() then
 			sounds.punch()
 			increase_boost(self, BOOST_SPECIAL_DAMAGE)
 			msg.post(message.other_id, MSG_DAMAGE, { amount = 50 })
 			self.attacking = false
-		elseif message.other_group == GROUP_POST then
+		elseif message.other_group == groups.POST then
 			if not is_on_ring_post() then
 				climb_ring_post(self, message.other_id)
 			end
 		end
-	elseif message_id == MSG_TRIGGER_RESPONSE then
+	elseif message_id == messages.TRIGGER_RESPONSE then
 		-- nearby another champ
-		if message.other_group == GROUP_CHAMP then
+		if message.other_group == groups.CHAMP then
 			if go.get_id() ~= message.other_id then
 				if message.enter then
 					self.nearby[message.other_id] = true
@@ -632,7 +640,7 @@ function on_message(self, message_id, message, sender)
 				end
 			end
 		-- inside ring
-		elseif message.other_group == GROUP_RING then
+		elseif message.other_group == groups.RING then
 			self.in_ring = message.enter
 		end
 	elseif message_id == MSG_DAMAGE then

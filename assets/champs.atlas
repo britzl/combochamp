@@ -613,6 +613,38 @@ animations {
   flip_horizontal: 0
   flip_vertical: 0
 }
+animations {
+  id: "referee_idle"
+  images {
+    image: "/assets/images/referee/referee_idle0.png"
+  }
+  images {
+    image: "/assets/images/referee/referee_idle1.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 2
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "refere_walk"
+  images {
+    image: "/assets/images/referee/referee_walk0.png"
+  }
+  images {
+    image: "/assets/images/referee/referee_walk1.png"
+  }
+  images {
+    image: "/assets/images/referee/referee_walk2.png"
+  }
+  images {
+    image: "/assets/images/referee/referee_walk3.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 10
+  flip_horizontal: 0
+  flip_vertical: 0
+}
 margin: 0
 extrude_borders: 2
 inner_padding: 0

@@ -22,7 +22,7 @@ title = Combo Champ
 gravity_y = -1000.0
 scale = 0.02
 max_collisions = 64
-debug = 0
+debug_alpha = 0.6
 
 [osx]
 bundle_identifier = com.britzl.combochamp

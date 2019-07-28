@@ -1,0 +1,61 @@
+local groups = require "game.groups"
+local messages = require "game.messages"
+local logger = require "ludobits.m.logger"
+
+local log = logger.create("[referee]")
+
+function init(self)
+	self.speed = 30
+	self.champs = {}
+end
+
+
+function update(self, dt)
+	-- calculate a mid position for all champs
+	local mid = go.get_position()
+	local count = 1
+	for champ,_ in pairs(self.champs) do
+		mid = mid + go.get_position(champ)
+		count = count + 1
+	end
+	mid.x = mid.x / count
+	mid.y = mid.y / count
+	mid.z = 0
+
+	-- position referee offset from the mid position
+	local pos = go.get_position()
+	local diff = mid - pos
+	local distance = vmath.length(diff)
+	if distance > 0 then
+		-- offset so that referee doesn't stand in the middle
+		diff.x = diff.x + 20
+		diff.y = diff.y + 20
+		local dir = vmath.normalize(diff)
+		pos = pos + dir * self.speed * dt
+	end
+	pos.z = 1 - pos.y / 640
+	go.set_position(pos)
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == messages.CONTACT_POINT_RESPONSE then
+		if message.other_group == groups.ROPE or message.other_group == groups.POST then
+			if message.distance > 0 then
+				go.set_position(go.get_position() + message.normal * message.distance)
+			end
+		end
+	elseif message_id == messages.TRIGGER_RESPONSE then
+		if message.other_group == groups.CHAMP then
+			if message.enter then
+				self.champs[message.other_id] = true
+			else
+				self.champs[message.other_id] = nil
+			end
+		end
+	end
+end
+
+function on_reload(self)
+	-- Add reload-handling code here
+	-- Remove this function if not needed
+end
