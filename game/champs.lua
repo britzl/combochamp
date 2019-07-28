@@ -23,31 +23,44 @@ local function create_champ(animation_prefix, props)
 end
 
 local CHAMPS = {
-	[M.TERRY_BROGAN] = create_champ("terry_brogan", {
+	create_champ("terry_brogan", {
+		id = M.TERRY_BROGAN,
 		name = "Terry \"Hollywood\" Brogan",
 		speed = 20,
 		stamina = 1000,
 	}),
-	[M.BRETT_AMOR] = create_champ("brett_amor", {
+	create_champ("brett_amor", {
+		id = M.BRETT_AMOR,
 		name = "Brett Amor",
 		speed = 25,
 		stamina = 120,
 	}),
-	[M.MARK_DEVOTION] = create_champ("mark_devotion", {
+	create_champ("mark_devotion", {
+		id = M.MARK_DEVOTION,
 		name = "Mark Devotion",
 		speed = 40,
 		stamina = 50,
 	}),
-	[M.GREEN_GORGON] = create_champ("green_gorgon", {
+	create_champ("green_gorgon", {
+		id = M.GREEN_GORGON,
 		name = "Green Gorgon",
 		speed = 35,
 		stamina = 75,
 	}),
 }
+for i=1,#CHAMPS do
+	local champ = CHAMPS[i]
+	CHAMPS[champ.id] = champ
+end
+
 
 function M.get(champ)
 	assert(CHAMPS[champ], "Unknown champ")
 	return CHAMPS[champ]
+end
+
+function M.random()
+	return CHAMPS[math.random(1, #CHAMPS)]
 end
 
 return M

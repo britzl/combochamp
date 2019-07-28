@@ -1,0 +1,32 @@
+local soundcontroller = require "util.soundcontroller"
+local sounds = require "game.sounds"
+
+go.property("audience_gain", 0.5)
+go.property("cheer_gain", 0.0)
+
+function init(self)
+	soundcontroller.sound_group(sounds.PUNCH, { "#punch2", "#punch3", "#punch4", "#punch5", "#punch8", "#punch10", })
+	soundcontroller.sound_group(sounds.AUDIENCE, { "#audience" })
+	soundcontroller.sound_group(sounds.BELL, { "#bell" })
+	soundcontroller.sound_group(sounds.MISS, { "#miss1" })
+	soundcontroller.sound_group(sounds.THUD, { "#thud1", "#thud2" })
+	soundcontroller.sound_group(sounds.CHEER, { "#cheer1", "#cheer2" }, { gate_time = 5 })
+		
+	sound.set_group_gain("sfx", 1.0)
+
+	soundcontroller.play_all(sounds.AUDIENCE)
+	pprint(sounds)
+end
+
+function update(self, dt)
+	self.cheer_gain = math.max(self.cheer_gain - 0.1 * dt, 0)
+	soundcontroller.set_gain(sounds.AUDIENCE, self.audience_gain)
+	soundcontroller.set_gain(sounds.CHEER, self.cheer_gain)
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("cheer") then
+		self.cheer_gain = math.min(self.cheer_gain + 0.1, 1.0)
+		soundcontroller.play_random(sounds.CHEER)
+	end
+end

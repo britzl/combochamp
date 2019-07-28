@@ -18,6 +18,7 @@ local util = require "ludobits.m.util"
 local sequence = require "ludobits.m.sequence"
 local champs = require "game.champs"
 local logger = require "ludobits.m.logger"
+local sounds = require "game.sounds"
 
 local log = nil
 
@@ -155,6 +156,7 @@ local function throw_champ(self)
 	if is_lifting_champ(id) then
 		sequence.run_once(function()
 			log("throw")
+			sounds.thud()
 			increase_boost(self, BOOST_THROW)
 			local pos = go.get_position()
 			local champ = self.lifting_champ
@@ -223,6 +225,7 @@ local function jump_from_ring_post(self)
 		sequence.delay(0.2)
 
 		-- bounce when landing and enable special attack
+		sounds.thud()
 		to = to + vmath.vector3(0,5,0)
 		enable("#specialattack")
 		self.attacking = true
@@ -292,6 +295,7 @@ local function handle_action(self, action_id, action)
 						stop(self)
 					end
 					self.attacking = true
+					sounds.miss()
 					enable_side(self, "#leftattack", "#rightattack")
 					play_flipbook(self, "punch")
 					sequence.go_animate(".", "position", go.PLAYBACK_ONCE_FORWARD, go.get_position() + self.direction * 5, go.EASING_INQUAD, 0.1)
@@ -426,6 +430,7 @@ local function take_damage(self, amount, source, props)
 		end)
 	end
 	update_hud(self)
+	sounds.cheer()
 
 	-- stun
 	sequence.run_once(function()
@@ -446,6 +451,8 @@ local function take_damage(self, amount, source, props)
 		self.current_speed_lerp = self.initial_speed_lerp
 		self.current_max_speed = self.initial_max_speed
 	end)
+
+	msg.post("game", "damage", { amount = amount })
 end
 
 function init(self)
@@ -590,10 +597,12 @@ function on_message(self, message_id, message, sender)
 			local dir = direction(go.get_id(), message.other_id)
 			if is_running() then
 				log("clothesline!")
+				sounds.punch()
 				increase_boost(self, BOOST_SPECIAL_DAMAGE)
 				msg.post(message.other_id, MSG_DAMAGE, { amount = 30, pushback = dir })
 			else
 				log("hit!")
+				sounds.punch()
 				increase_boost(self, BOOST_NORMAL_DAMAGE)
 				msg.post(message.other_id, MSG_DAMAGE, { amount = 10, pushback = dir })
 				stop(self)
@@ -603,6 +612,7 @@ function on_message(self, message_id, message, sender)
 		elseif message.own_group == GROUP_SPECIAL
 		and message.other_group == GROUP_CHAMP
 		and message.other_id ~= go.get_id() then
+			sounds.punch()
 			increase_boost(self, BOOST_SPECIAL_DAMAGE)
 			msg.post(message.other_id, MSG_DAMAGE, { amount = 50 })
 			self.attacking = false

@@ -1,13 +1,10 @@
-# Welcome to Defold
+# Combo Champ
 
-This project was created from the "empty" project template.
+This is a contribution to the [2019 A Game By Its Cover](https://itch.io/jam/a-game-by-its-cover-2019) game jam.
 
-The settings in ["game.project"](defold://open?path=/game.project) are all the default. A bootstrap empty ["main.collection"](defold://open?path=/main/main.collection) is included.
 
-Check out [the documentation pages](https://defold.com/learn) for examples, tutorials, manuals and API docs.
+## Credits
 
-If you run into trouble, help is available in [our forum](https://forum.defold.com).
-
-Happy Defolding!
-
----
+* [Björn Ritzl](https://twitter.com/bjornritzl) - Programming, additional art
+* [Keith A. Woods](https://twitter.com/KeithAWood) - Graphics and original [Famicase](http://famicase.com/19/softs/048_sample.jpg)
+* Sound effects from Freesounds and SoundBible
