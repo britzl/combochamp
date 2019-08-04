@@ -379,7 +379,7 @@ function on_input(self, action_id, action)
 			for i,player in ipairs(self.players) do
 				if player.active then
 					data[#data + 1] = {
-						index = player.index,
+						index = #data + 1,
 						champ = player.champ.id,
 						controls = player.controls,
 						gamepad = player.gamepad,
