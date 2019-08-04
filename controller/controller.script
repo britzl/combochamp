@@ -1,8 +1,44 @@
 local monarch = require "monarch.monarch"
+local controls = require "game.controls"
+local champs = require "game.champs"
+
+local function show_game()
+	local players = {
+		{
+			index = 1,
+			controls = controls.KEYBOARD,
+			gamepad = 1,
+			champ = champs.TERRY_BROGAN,
+			team = 1,
+		},
+		--[[{
+			index = 2,
+			controls = controls.CPU,
+			champ = champs.GREEN_GORGON,
+			team = 2,
+		},
+		{
+			index = 3,
+			controls = controls.CPU,
+			champ = champs.GREEN_GORGON,
+			team = 3,
+		},
+		{
+			index = 4,
+			controls = controls.CPU,
+			champ = champs.GREEN_GORGON,
+			team = 4,
+		},--]]
+	}
+	monarch.show("game", nil, players)
+end
 
 function init(self)
+	math.randomseed(socket.gettime()) math.random() math.random() math.random()
+	--monarch.debug()
 	msg.post(".", "acquire_input_focus")
 	timer.delay(0, false, function()
-		monarch.show("title")
+		--show_game()
+		monarch.show("menubg") monarch.show("title")
 	end)
 end

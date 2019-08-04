@@ -15,7 +15,7 @@ package = com.britzl.combochamp
 gcm_sender_id = 
 
 [project]
-dependencies = https://github.com/britzl/monarch/archive/2.17.2.zip,https://github.com/britzl/defold-orthographic/archive/2.9.1.zip,https://github.com/britzl/defold-input/archive/1.6.0.zip,https://github.com/britzl/ludobits/archive/6.6.0.zip
+dependencies = https://github.com/britzl/monarch/archive/dev-queue.zip,https://github.com/britzl/defold-orthographic/archive/2.9.1.zip,https://github.com/britzl/defold-input/archive/2.4.0.zip,https://github.com/britzl/ludobits/archive/6.6.0.zip
 title = Combo Champ
 
 [physics]
@@ -34,6 +34,7 @@ infoplist = /builtins/manifests/ios/Info.plist
 
 [input]
 game_binding = /in/bindings/all.input_bindingc
+gamepads = /in/gamepads/in.gamepadsc
 
 [graphics]
 default_texture_min_filter = nearest

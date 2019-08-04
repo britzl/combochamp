@@ -1,0 +1,17 @@
+local monarch = require "monarch.monarch"
+local transitions = require "monarch.transitions.gui"
+
+
+function init(self)
+	self.transition = transitions.create()
+		.show_in(gui.get_node("bg"), transitions.fade_in, gui.EASING_INOUTQUAD, 0.5, 0)
+		.back_in(gui.get_node("bg"), transitions.fade_in, gui.EASING_INOUTQUAD, 0.5, 0)
+				
+	msg.post("@render:", "clear_color", { color = vmath.vector4(0.953, 0.655, 0.102, 1.0) })
+	gui.animate(gui.get_node("bg"), gui.PROP_ROTATION, vmath.vector3(0, 0, -360), gui.EASING_LINEAR, 30, 0, nil, gui.PLAYBACK_LOOP_FORWARD)
+	sound.play("#titlemusic")
+end
+
+function on_message(self, message_id, message, sender)
+	self.transition.handle(message_id, message, sender)
+end

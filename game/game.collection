@@ -138,80 +138,15 @@ embedded_instances {
 }
 embedded_instances {
   id: "ring"
+  children: "mat"
+  children: "mat_light"
+  children: "mat_symbol"
   children: "post_bottomleft"
   children: "post_bottomright"
   children: "post_topleft"
   children: "post_topright"
   children: "ropes"
-  data: "embedded_components {\n"
-  "  id: \"sprite\"\n"
-  "  type: \"sprite\"\n"
-  "  data: \"tile_set: \\\"/assets/game.atlas\\\"\\n"
-  "default_animation: \\\"ring\\\"\\n"
-  "material: \\\"/builtins/materials/sprite.material\\\"\\n"
-  "blend_mode: BLEND_MODE_ALPHA\\n"
-  "\"\n"
-  "  position {\n"
-  "    x: 0.0\n"
-  "    y: 3.0\n"
-  "    z: 0.0\n"
-  "  }\n"
-  "  rotation {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "    w: 1.0\n"
-  "  }\n"
-  "}\n"
-  "embedded_components {\n"
-  "  id: \"collisionobject\"\n"
-  "  type: \"collisionobject\"\n"
-  "  data: \"collision_shape: \\\"\\\"\\n"
-  "type: COLLISION_OBJECT_TYPE_TRIGGER\\n"
-  "mass: 0.0\\n"
-  "friction: 0.1\\n"
-  "restitution: 0.5\\n"
-  "group: \\\"ring\\\"\\n"
-  "mask: \\\"champ\\\"\\n"
-  "mask: \\\"referee\\\"\\n"
-  "embedded_collision_shape {\\n"
-  "  shapes {\\n"
-  "    shape_type: TYPE_BOX\\n"
-  "    position {\\n"
-  "      x: 0.0\\n"
-  "      y: 16.0\\n"
-  "      z: 0.0\\n"
-  "    }\\n"
-  "    rotation {\\n"
-  "      x: 0.0\\n"
-  "      y: 0.0\\n"
-  "      z: 0.0\\n"
-  "      w: 1.0\\n"
-  "    }\\n"
-  "    index: 0\\n"
-  "    count: 3\\n"
-  "  }\\n"
-  "  data: 87.0\\n"
-  "  data: 75.0\\n"
-  "  data: 10.0\\n"
-  "}\\n"
-  "linear_damping: 0.0\\n"
-  "angular_damping: 0.0\\n"
-  "locked_rotation: false\\n"
-  "\"\n"
-  "  position {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "  }\n"
-  "  rotation {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "    w: 1.0\n"
-  "  }\n"
-  "}\n"
-  ""
+  data: ""
   position {
     x: 0.0
     y: 0.0
@@ -241,7 +176,7 @@ embedded_instances {
   "\"\n"
   "  position {\n"
   "    x: -84.5\n"
-  "    y: 20.0\n"
+  "    y: 17.0\n"
   "    z: 5.0\n"
   "  }\n"
   "  rotation {\n"
@@ -342,8 +277,8 @@ embedded_instances {
   "  shapes {\\n"
   "    shape_type: TYPE_BOX\\n"
   "    position {\\n"
-  "      x: -93.0\\n"
-  "      y: 15.0\\n"
+  "      x: -88.0\\n"
+  "      y: 11.0\\n"
   "      z: 0.0\\n"
   "    }\\n"
   "    rotation {\\n"
@@ -359,7 +294,7 @@ embedded_instances {
   "    shape_type: TYPE_BOX\\n"
   "    position {\\n"
   "      x: 0.0\\n"
-  "      y: 96.0\\n"
+  "      y: 86.0\\n"
   "      z: 0.0\\n"
   "    }\\n"
   "    rotation {\\n"
@@ -374,8 +309,8 @@ embedded_instances {
   "  shapes {\\n"
   "    shape_type: TYPE_BOX\\n"
   "    position {\\n"
-  "      x: 93.0\\n"
-  "      y: 15.0\\n"
+  "      x: 88.0\\n"
+  "      y: 11.0\\n"
   "      z: 0.0\\n"
   "    }\\n"
   "    rotation {\\n"
@@ -390,13 +325,13 @@ embedded_instances {
   "  data: 80.0\\n"
   "  data: 5.0\\n"
   "  data: 10.0\\n"
-  "  data: 5.0\\n"
+  "  data: 2.5\\n"
   "  data: 60.0\\n"
   "  data: 10.0\\n"
   "  data: 80.0\\n"
-  "  data: 5.0\\n"
+  "  data: 2.5\\n"
   "  data: 10.0\\n"
-  "  data: 5.0\\n"
+  "  data: 2.5\\n"
   "  data: 60.0\\n"
   "  data: 10.0\\n"
   "}\\n"
@@ -426,7 +361,7 @@ embedded_instances {
   "\"\n"
   "  position {\n"
   "    x: 0.0\n"
-  "    y: 90.0\n"
+  "    y: 85.0\n"
   "    z: 0.0\n"
   "  }\n"
   "  rotation {\n"
@@ -446,7 +381,7 @@ embedded_instances {
   "\"\n"
   "  position {\n"
   "    x: 0.0\n"
-  "    y: 86.0\n"
+  "    y: 81.0\n"
   "    z: 0.0\n"
   "  }\n"
   "  rotation {\n"
@@ -466,7 +401,7 @@ embedded_instances {
   "\"\n"
   "  position {\n"
   "    x: 0.0\n"
-  "    y: 82.0\n"
+  "    y: 77.0\n"
   "    z: 0.0\n"
   "  }\n"
   "  rotation {\n"
@@ -486,7 +421,7 @@ embedded_instances {
   "\"\n"
   "  position {\n"
   "    x: 84.5\n"
-  "    y: 20.0\n"
+  "    y: 17.0\n"
   "    z: 5.0\n"
   "  }\n"
   "  rotation {\n"
@@ -622,7 +557,7 @@ embedded_instances {
   ""
   position {
     x: -87.0
-    y: -57.0
+    y: -58.0
     z: 1.0
   }
   rotation {
@@ -710,7 +645,7 @@ embedded_instances {
   ""
   position {
     x: 87.0
-    y: -57.0
+    y: -58.0
     z: 1.0
   }
   rotation {
@@ -798,7 +733,7 @@ embedded_instances {
   ""
   position {
     x: -87.0
-    y: 86.0
+    y: 81.0
     z: 1.0
   }
   rotation {
@@ -886,8 +821,176 @@ embedded_instances {
   ""
   position {
     x: 87.0
-    y: 86.0
+    y: 81.0
     z: 1.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+embedded_instances {
+  id: "mat_light"
+  data: "embedded_components {\n"
+  "  id: \"sprite\"\n"
+  "  type: \"sprite\"\n"
+  "  data: \"tile_set: \\\"/assets/game.atlas\\\"\\n"
+  "default_animation: \\\"gradient_mat\\\"\\n"
+  "material: \\\"/builtins/materials/sprite.material\\\"\\n"
+  "blend_mode: BLEND_MODE_ALPHA\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  ""
+  position {
+    x: 0.0
+    y: 0.0
+    z: 0.2
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 2.0
+    y: 2.0
+    z: 2.0
+  }
+}
+embedded_instances {
+  id: "mat"
+  data: "embedded_components {\n"
+  "  id: \"collisionobject\"\n"
+  "  type: \"collisionobject\"\n"
+  "  data: \"collision_shape: \\\"\\\"\\n"
+  "type: COLLISION_OBJECT_TYPE_TRIGGER\\n"
+  "mass: 0.0\\n"
+  "friction: 0.1\\n"
+  "restitution: 0.5\\n"
+  "group: \\\"ring\\\"\\n"
+  "mask: \\\"champ\\\"\\n"
+  "mask: \\\"referee\\\"\\n"
+  "embedded_collision_shape {\\n"
+  "  shapes {\\n"
+  "    shape_type: TYPE_BOX\\n"
+  "    position {\\n"
+  "      x: 0.0\\n"
+  "      y: 1.0\\n"
+  "      z: 0.0\\n"
+  "    }\\n"
+  "    rotation {\\n"
+  "      x: 0.0\\n"
+  "      y: 0.0\\n"
+  "      z: 0.0\\n"
+  "      w: 1.0\\n"
+  "    }\\n"
+  "    index: 0\\n"
+  "    count: 3\\n"
+  "  }\\n"
+  "  data: 87.0\\n"
+  "  data: 74.0\\n"
+  "  data: 0.5\\n"
+  "}\\n"
+  "linear_damping: 0.0\\n"
+  "angular_damping: 0.0\\n"
+  "locked_rotation: false\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"sprite\"\n"
+  "  type: \"sprite\"\n"
+  "  data: \"tile_set: \\\"/assets/game.atlas\\\"\\n"
+  "default_animation: \\\"ring_purple\\\"\\n"
+  "material: \\\"/builtins/materials/sprite.material\\\"\\n"
+  "blend_mode: BLEND_MODE_ALPHA\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  ""
+  position {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 10.0
+    y: 10.0
+    z: 1.0
+  }
+}
+embedded_instances {
+  id: "mat_symbol"
+  data: "embedded_components {\n"
+  "  id: \"symbol\"\n"
+  "  type: \"sprite\"\n"
+  "  data: \"tile_set: \\\"/assets/game.atlas\\\"\\n"
+  "default_animation: \\\"skull\\\"\\n"
+  "material: \\\"/builtins/materials/sprite.material\\\"\\n"
+  "blend_mode: BLEND_MODE_ALPHA\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 8.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  ""
+  position {
+    x: 0.0
+    y: 0.0
+    z: 0.1
   }
   rotation {
     x: 0.0

@@ -1,0 +1,1 @@
+convert -size 90x75 radial-gradient:#AAAAAA44-#00000000 -background none -flatten gradient_mat.png

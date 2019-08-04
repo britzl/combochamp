@@ -1,32 +1,54 @@
-local mapper = require "in.mapper"
-local actions = require "game.actions"
-local champs = require "game.champs"
+local monarch = require "monarch.monarch"
 local sounds = require "game.sounds"
+local champs = require "game.champs"
 
-local function create_champ(x, y, id, player, champ)
-	local data = champs.get(champ)
-	local pos = vmath.vector3(x, y, 0)
+local RING_CORNERS = {
+	{ x = -60, y = -40 },
+	{ x = 60, y = -40 },
+	{ x = -60, y = 50 },
+	{ x = 60, y = 50 },
+}
+
+local RING_SYMBOLS = { "star", "skull", "transparent1px" }
+local RING_MATS = { "ring_blue", "ring_grey", "ring_purple", "ring_brown", "ring_green" }
+
+local function create_champ(player)
+	local corner = RING_CORNERS[player.index]
+	local data = champs.get(player.champ)
+	local pos = vmath.vector3(corner.x, corner.y, 0)
 	local props = {
-		player = player,
-		id = id,
-		champ = champ,
+		controls = player.controls,
+		gamepad = player.gamepad,
+		index = player.index,
+		champ = player.champ,
+		team = player.team,
 		initial_max_speed = data.speed,
 		initial_stamina = data.stamina,
 	}
-	pprint(props)
 	return factory.create("#champfactory", pos, nil, props)
 end
 
 function init(self)
-	msg.post("@render:", "clear_color", { color = vmath.vector4(0.3, 0.3, 0.3, 1.0) })
+	local c = 0.3
+	msg.post("@render:", "clear_color", { color = vmath.vector4(c,c,c,1) })
+	--msg.post("@render:", "clear_color", { color = vmath.vector4(0.3, 0.3, 0.3, 1.0) })
+	
+	sprite.play_flipbook("mat_symbol#symbol", RING_SYMBOLS[math.random(1, #RING_SYMBOLS)])
+	sprite.play_flipbook("mat#sprite", RING_MATS[math.random(1, #RING_MATS)])
 
-	self.champs = {
-		--create_champ(-60, -40, 1, true, champs.TERRY_BROGAN),
-		create_champ(-60, -40, 1, true, champs.TERRY_BROGAN),
-		create_champ(60, -40, 2, false, champs.BRETT_AMOR),
-		create_champ(-60, 50, 3, false, champs.MARK_DEVOTION),
-		create_champ(60, 50, 4, false, champs.GREEN_GORGON),
-	}
+	local players = monarch.data("game")
+	local champs = {}
+	local teams = {}
+	local team_count = 0
+	for i,player in ipairs(players) do
+		champs[i] = create_champ(player)
+		if not teams[player.team] then
+			teams[player.team] = true
+			team_count = team_count + 1
+		end
+	end
+
+	msg.post("/hud", "start_game", { champs = #champs, teams = team_count })
 
 	--[[
 
@@ -47,21 +69,6 @@ function init(self)
 	A when grappling -> Throw backwards
 	B when grappling -> Backwards kick with flip
 	--]]
-
-	
-	mapper.bind(mapper.KEY_UP, actions.UP, 1)
-	mapper.bind(mapper.KEY_DOWN, actions.DOWN, 1)
-	mapper.bind(mapper.KEY_LEFT, actions.LEFT, 1)
-	mapper.bind(mapper.KEY_RIGHT, actions.RIGHT, 1)
-	mapper.bind(mapper.KEY_N, actions.A, 1)
-	mapper.bind(mapper.KEY_M, actions.B, 1)
-		
-	mapper.bind(mapper.KEY_W, actions.UP, 4)
-	mapper.bind(mapper.KEY_S, actions.DOWN, 4)
-	mapper.bind(mapper.KEY_A, actions.LEFT, 4)
-	mapper.bind(mapper.KEY_D, actions.RIGHT, 4)
-	mapper.bind(mapper.KEY_Q, actions.A, 4)
-	mapper.bind(mapper.KEY_E, actions.B, 4)
 
 	timer.delay(0, false, function()
 		sounds.bell()

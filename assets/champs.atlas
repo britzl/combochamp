@@ -14,12 +14,6 @@ images {
   image: "/assets/images/champs/mark_devotion/mark_devotion_idle0.png"
 }
 images {
-  image: "/assets/images/referee/referee.png"
-}
-images {
-  image: "/assets/images/referee/referee_arm_up.png"
-}
-images {
   image: "/assets/images/champs/shadow.png"
 }
 animations {
@@ -627,7 +621,7 @@ animations {
   flip_vertical: 0
 }
 animations {
-  id: "refere_walk"
+  id: "referee_walk"
   images {
     image: "/assets/images/referee/referee_walk0.png"
   }

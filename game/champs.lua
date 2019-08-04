@@ -9,6 +9,7 @@ M.MARK_DEVOTION = hash("mark_devotion")
 
 
 local function create_champ(animation_prefix, props)
+	props.short_name = props.short_name or props.name
 	props.punch = hash(animation_prefix .. "_punch")
 	props.kick = hash(animation_prefix .. "_kick")
 	props.idle = hash(animation_prefix .. "_idle")
@@ -26,6 +27,7 @@ local CHAMPS = {
 	create_champ("terry_brogan", {
 		id = M.TERRY_BROGAN,
 		name = "Terry \"Hollywood\" Brogan",
+		short_name = "Terry Brogan",
 		speed = 20,
 		stamina = 1000,
 	}),
@@ -53,6 +55,9 @@ for i=1,#CHAMPS do
 	CHAMPS[champ.id] = champ
 end
 
+function M.all()
+	return CHAMPS
+end
 
 function M.get(champ)
 	assert(CHAMPS[champ], "Unknown champ")

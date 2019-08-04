@@ -1,6 +1,8 @@
-go.property("player", true)
-go.property("id", 1)
+go.property("index", 1)
 go.property("champ", hash("terry_brogan"))
+go.property("team", 1)
+go.property("controls", hash(""))
+go.property("gamepad", 1)
 
 go.property("initial_stamina", 100)
 go.property("current_stamina", 100)
@@ -10,14 +12,18 @@ go.property("initial_speed_lerp", 0.85)
 go.property("current_speed_lerp", 0.85)
 go.property("acceleration", 250)
 
-local mapper = require "in.mapper"
-local state = require "in.state"
-local actions = require "game.actions"
-local directions = require "game.directions"
+local logger = require "ludobits.m.logger"
 local util = require "ludobits.m.util"
 local sequence = require "ludobits.m.sequence"
+
+local mapper = require "in.mapper"
+local state = require "in.state"
+local triggers = require "in.triggers"
+
+local actions = require "game.actions"
+local directions = require "game.directions"
 local champs = require "game.champs"
-local logger = require "ludobits.m.logger"
+local controls = require "game.controls"
 local sounds = require "game.sounds"
 local groups = require "game.groups"
 local messages = require "game.messages"
@@ -58,13 +64,21 @@ local POST_TO_DIRECTION = {
 	[RING_POST_BOTTOMRIGHT] = V3_BOTTOMRIGHT,
 }
 
-local CHAMPS = {}
+local CHAMPS = {
+	all = {},
+	lookup = {},
+}
 
 local function get_champ(id)
-	return CHAMPS[id or go.get_id()]
+	return CHAMPS.lookup[id or go.get_id()]
+end
+
+local function random_champ()
+	return CHAMPS.all[math.random(1, #CHAMPS.all)]
 end
 
 local function is_stunned(id) return get_champ(id).stunned end
+local function is_in_ring(id) return get_champ(id).in_ring end
 local function is_on_ring_post(id) return get_champ(id).on_ring_post end
 local function is_down(id) return get_champ(id).down end
 local function is_running(id) return get_champ(id).running end
@@ -72,11 +86,12 @@ local function is_attacking(id) return get_champ(id).attacking end
 local function is_lifting_champ(id) return get_champ(id).lifting_champ end
 local function is_jumping(id) return get_champ(id).jumping end
 local function is_busy(id) return get_champ(id).busy end
+local function is_opponent(id) return get_champ().team ~= get_champ(id).team end
+local function is_me(id) return get_champ().id == id end
 local function is_moving(id)
-	local speed = get_champ(id).speed
 	return not is_stunned(id)
 	and not is_down(id)
-	and (speed.x ~= 0 or speed.y ~= 0)
+	and vmath.length(get_champ(id).speed) > 1
 end
 local function is_idle(id)
 	return not is_moving(id)
@@ -123,7 +138,7 @@ end
 
 local function update_hud(self)
 	msg.post("hud", "champ", {
-		id = self.id,
+		index = self.index,
 		champ = self.champ,
 		boost = self.current_boost / self.max_boost,
 		health = self.current_stamina / self.initial_stamina,
@@ -253,10 +268,41 @@ local function attack(self)
 	end)
 end
 
+
+local function taunt(self)
+	log("taunt")
+	sequence.run_once(function()
+		increase_boost(self, BOOST_TAUNT)
+		self.busy = true
+		stop(self)
+		play_flipbook(self, "taunt")
+		sequence.delay(1)
+		self.busy = false
+	end)
+end
+
+
+local function pin(self, champ)
+	log("pin")
+	-- pin opponent
+	sequence.run_once(function()
+		self.busy = true
+		stop(self)
+		local to = go.get_position(champ)
+		to.y = to.y - 1
+		go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD, to.x, go.EASING_INOUTQUAD, 0.3)
+		go.animate(".", "position.y", go.PLAYBACK_ONCE_FORWARD, to.y, go.EASING_OUTBOUNCE, 0.5)
+		play_flipbook(self, "back")
+		msg.post("/referee", "pin", { champ = go.get_id(), pinned = champ })
+		sequence.delay(4)
+		self.busy = false
+	end)
+end
+
 local function handle_action(self, action_id, action)
 	self.state.on_input(action_id, action)
 
-	if is_stunned() or is_down() then
+	if is_stunned() or is_down() or is_busy() then
 		return
 	end
 
@@ -304,41 +350,10 @@ local function handle_action(self, action_id, action)
 		if action.pressed then
 			local nearby = next(self.nearby)
 			if not nearby then
-				log("taunt")
-				sequence.run_once(function()
-					increase_boost(self, BOOST_TAUNT)
-					self.busy = true
-					stop(self)
-					play_flipbook(self, "taunt")
-					sequence.delay(1)
-					self.busy = false
-				end)
+				taunt(self)
 			elseif is_down(nearby) then
-				log("pin")
-				-- pin opponent
-				sequence.run_once(function()
-					self.busy = true
-					stop(self)
-					local to = go.get_position(nearby)
-					to.y = to.y - 1
-					go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD, to.x, go.EASING_INOUTQUAD, 0.3)
-					go.animate(".", "position.y", go.PLAYBACK_ONCE_FORWARD, to.y, go.EASING_OUTBOUNCE, 0.5)
-					play_flipbook(self, "back")
-					msg.post("/referee", "pin", { champ = go.get_id(), pinned = nearby })
-					sequence.delay(4)
-					self.busy = false
-				end)
+				pin(self, nearby)
 			end
-			--[[sequence.run_once(function()
-				self.attacking = true
-				stop(self)
-				enable_side(self, "#leftattack", "#rightattack")
-				play_flipbook(self, "kick")
-				sequence.delay(1.0)
-				disable("#leftattack")
-				disable("#rightattack")
-				self.attacking = false
-			end)--]]
 		end
 	end
 
@@ -358,8 +373,11 @@ local function start_ai(self)
 		end
 		
 		if not target then
-			target = CHAMPS[math.random(1, #CHAMPS)]
-			if target.id == go.get_id() or is_down(target.id) or is_on_ring_post(target.id) then
+			target = random_champ()
+			if target.id == self.id
+			or target.team == self.team
+			or is_down(target.id)
+			or is_on_ring_post(target.id) then
 				target = nil
 			end
 		end
@@ -464,10 +482,40 @@ local function take_damage(self, amount, source, props)
 end
 
 function init(self)
-	log = logger.create("[champ_" .. self.id .. "]")
-	log(self.player, self.id, self.champ)
-	CHAMPS[go.get_id()] = self
-	CHAMPS[#CHAMPS + 1] = { id = go.get_id(), instance = self }
+	log = logger.create("[champ_" .. self.index .. "]")
+	log(self.controls, self.index, self.champ)
+
+	if self.controls == controls.KEYBOARD then
+		mapper.bind(triggers.KEY_UP, actions.UP, self.index)
+		mapper.bind(triggers.KEY_DOWN, actions.DOWN, self.index)
+		mapper.bind(triggers.KEY_LEFT, actions.LEFT, self.index)
+		mapper.bind(triggers.KEY_RIGHT, actions.RIGHT, self.index)
+		mapper.bind(triggers.KEY_N, actions.A, self.index)
+		mapper.bind(triggers.KEY_M, actions.B, self.index)
+	elseif self.controls == controls.GAMEPAD then
+		mapper.bind(triggers.GAMEPAD_LSTICK_LEFT, actions.LEFT, self.index, self.gamepad)
+		mapper.bind(triggers.GAMEPAD_LPAD_LEFT, actions.LEFT, self.index, self.gamepad)
+		mapper.bind(triggers.GAMEPAD_RSTICK_LEFT, actions.LEFT, self.index, self.gamepad)
+		mapper.bind(triggers.GAMEPAD_LSTICK_RIGHT, actions.RIGHT, self.index, self.gamepad)
+		mapper.bind(triggers.GAMEPAD_LPAD_RIGHT, actions.RIGHT, self.index, self.gamepad)
+		mapper.bind(triggers.GAMEPAD_RSTICK_RIGHT, actions.RIGHT, self.index, self.gamepad)
+		mapper.bind(triggers.GAMEPAD_LSTICK_DOWN, actions.DOWN, self.index, self.gamepad)
+		mapper.bind(triggers.GAMEPAD_LPAD_DOWN, actions.DOWN, self.index, self.gamepad)
+		mapper.bind(triggers.GAMEPAD_RSTICK_DOWN, actions.DOWN, self.index, self.gamepad)
+		mapper.bind(triggers.GAMEPAD_LSTICK_UP, actions.UP, self.index, self.gamepad)
+		mapper.bind(triggers.GAMEPAD_LPAD_UP, actions.UP, self.index, self.gamepad)
+		mapper.bind(triggers.GAMEPAD_RSTICK_UP, actions.UP, self.index, self.gamepad)
+		mapper.bind(triggers.GAMEPAD_LTRIGGER, actions.A, self.index, self.gamepad)
+		mapper.bind(triggers.GAMEPAD_LSHOULDER, actions.A, self.index, self.gamepad)
+		mapper.bind(triggers.GAMEPAD_RPAD_LEFT, actions.A, self.index, self.gamepad)
+		mapper.bind(triggers.GAMEPAD_RTRIGGER, actions.B, self.index, self.gamepad)
+		mapper.bind(triggers.GAMEPAD_RSHOULDER, actions.B, self.index, self.gamepad)
+		mapper.bind(triggers.GAMEPAD_RPAD_RIGHT, actions.B, self.index, self.gamepad)
+	end
+
+	CHAMPS.lookup[go.get_id()] = self
+	CHAMPS.all[#CHAMPS.all + 1] = self
+	self.id = go.get_id()
 	self.nearby = {}
 	self.in_ring = false
 	self.last_action_time = nil
@@ -487,7 +535,7 @@ function init(self)
 	disable("#lefthit")
 	disable("#righthit")
 	disable("#specialattack")
-	if self.player then
+	if self.controls ~= controls.CPU then
 		msg.post(".", "acquire_input_focus")
 	end
 	sequence.run_once(function()
@@ -496,7 +544,7 @@ function init(self)
 	end)
 	update_hud(self)
 
-	if not self.player then
+	if self.controls == controls.CPU then
 		start_ai(self)
 	end
 end
@@ -567,6 +615,7 @@ function on_message(self, message_id, message, sender)
 				if message.distance > 0 then
 					-- bounce on the rope
 					if is_running() then
+						log("bounce on rope")
 						increase_boost(self, BOOST_BOUNCE_ROPE)
 						-- increase speed and animate back to previous speed
 						local current_max_speed = self.current_max_speed
@@ -589,19 +638,29 @@ function on_message(self, message_id, message, sender)
 						end)
 					-- stop at the rope
 					else
+						log("stop at rope")
 						go.set_position(go.get_position() + message.normal * message.distance)
 					end
 				end
 			-- get back into ring
 			else
-				local pos = go.get_position()
-				pos = pos + message.normal * 30
-				go.animate(".", "position", go.PLAYBACK_ONCE_FORWARD, pos, go.EASING_INOUTQUAD, 0.4)
+				log("climb in")
+				sequence.run_once(function()
+					self.busy = true
+					disable("#champcollider")
+					local pos = go.get_position()
+					pos = pos - message.normal * 30
+					sequence.go_animate(".", "position", go.PLAYBACK_ONCE_FORWARD, pos, go.EASING_INOUTQUAD, 0.4)
+					enable("#champcollider")
+					self.busy = false
+				end)
 			end
 		-- this champ hit another champ
 		elseif message.own_group == groups.ATTACK
 		and message.other_group == groups.CHAMP
-		and is_attacking() and not is_down(message.other_id) then
+		and is_attacking()
+		and not is_down(message.other_id)
+		and is_opponent(message.other_id) then
 			local dir = direction(go.get_id(), message.other_id)
 			if is_running() then
 				log("clothesline!")
@@ -620,19 +679,22 @@ function on_message(self, message_id, message, sender)
 		elseif message.own_group == groups.SPECIAL
 		and message.other_group == groups.CHAMP
 		and message.other_id ~= go.get_id() then
+			log("special!")
 			sounds.punch()
 			increase_boost(self, BOOST_SPECIAL_DAMAGE)
 			msg.post(message.other_id, MSG_DAMAGE, { amount = 50 })
 			self.attacking = false
 		elseif message.other_group == groups.POST then
-			if not is_on_ring_post() then
+			if not is_in_ring() then
+				go.set_position(go.get_position() + message.normal * message.distance)
+			elseif not is_on_ring_post() then
 				climb_ring_post(self, message.other_id)
 			end
 		end
 	elseif message_id == messages.TRIGGER_RESPONSE then
 		-- nearby another champ
 		if message.other_group == groups.CHAMP then
-			if go.get_id() ~= message.other_id then
+			if not is_me(message.other_id) and is_opponent(message.other_id) then
 				if message.enter then
 					self.nearby[message.other_id] = true
 				else
@@ -658,7 +720,7 @@ function on_message(self, message_id, message, sender)
 end
 
 function on_input(self, action_id, action)
-	action_id = mapper.on_input(action_id, self.id)
+	action_id = mapper.on_input(action_id, self.index)
 	handle_action(self, action_id, action)
 end
 

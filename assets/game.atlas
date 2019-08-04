@@ -1,7 +1,4 @@
 images {
-  image: "/assets/images/ring/ring.png"
-}
-images {
   image: "/assets/images/ring/ropepost_topleft.png"
 }
 images {
@@ -33,6 +30,39 @@ images {
 }
 images {
   image: "/assets/images/ring/rope_horizontal_red.png"
+}
+images {
+  image: "/assets/images/ring/skull.png"
+}
+images {
+  image: "/assets/images/ring/star.png"
+}
+images {
+  image: "/assets/images/ring/ring_blue.png"
+}
+images {
+  image: "/assets/images/ring/ring_brown.png"
+}
+images {
+  image: "/assets/images/ring/ring_green.png"
+}
+images {
+  image: "/assets/images/ring/ring_grey.png"
+}
+images {
+  image: "/assets/images/ring/ring_purple.png"
+}
+images {
+  image: "/assets/images/ring/gradient.png"
+}
+images {
+  image: "/assets/images/white_1px.png"
+}
+images {
+  image: "/assets/images/ring/gradient_mat.png"
+}
+images {
+  image: "/assets/images/ring/gradient_floor.png"
 }
 margin: 0
 extrude_borders: 2

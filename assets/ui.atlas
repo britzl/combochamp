@@ -1,0 +1,54 @@
+images {
+  image: "/assets/images/ui/logo.png"
+}
+images {
+  image: "/assets/images/ui/background_burst_single.png"
+}
+images {
+  image: "/assets/images/ui/8bitcouncil.png"
+}
+images {
+  image: "/assets/images/transparent1px.png"
+}
+images {
+  image: "/assets/images/ui/cursor1.png"
+}
+images {
+  image: "/assets/images/ui/black_semi_transparent_1px.png"
+}
+images {
+  image: "/assets/images/ui/keyboard.png"
+}
+images {
+  image: "/assets/images/ui/gamepad.png"
+}
+images {
+  image: "/assets/images/ui/p1.png"
+}
+images {
+  image: "/assets/images/ui/cursor2.png"
+}
+images {
+  image: "/assets/images/ui/cursor3.png"
+}
+images {
+  image: "/assets/images/ui/cursor4.png"
+}
+images {
+  image: "/assets/images/ui/cpu.png"
+}
+images {
+  image: "/assets/images/ui/japan.png"
+}
+images {
+  image: "/assets/images/ui/sweden.png"
+}
+images {
+  image: "/assets/images/ui/usa.png"
+}
+images {
+  image: "/assets/images/ui/mexico.png"
+}
+margin: 0
+extrude_borders: 3
+inner_padding: 0

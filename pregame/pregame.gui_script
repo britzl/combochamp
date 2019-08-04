@@ -1,0 +1,398 @@
+local monarch = require "monarch.monarch"
+local transitions = require "monarch.transitions.gui"
+local button = require "in.button"
+local triggers = require "in.triggers"
+local mapper = require "in.mapper"
+local state = require "in.state"
+local util = require "ludobits.m.util"
+
+local champs = require "game.champs"
+local teams = require "game.teams"
+local controls = require "game.controls"
+
+local ACTION_LEFT = hash("left")
+local ACTION_RIGHT = hash("right")
+local ACTION_UP = hash("up")
+local ACTION_DOWN = hash("down")
+local ACTION_SELECT = hash("select")
+
+local function bind_gamepad(player_index)
+	mapper.bind(triggers.GAMEPAD_LSTICK_LEFT, ACTION_LEFT, player_index)
+	mapper.bind(triggers.GAMEPAD_LPAD_LEFT, ACTION_LEFT, player_index)
+	mapper.bind(triggers.GAMEPAD_RSTICK_LEFT, ACTION_LEFT, player_index)
+	mapper.bind(triggers.GAMEPAD_LTRIGGER, ACTION_LEFT, player_index)
+	mapper.bind(triggers.GAMEPAD_LSHOULDER, ACTION_LEFT, player_index)
+		
+	mapper.bind(triggers.GAMEPAD_LSTICK_RIGHT, ACTION_RIGHT, player_index)
+	mapper.bind(triggers.GAMEPAD_LPAD_RIGHT, ACTION_RIGHT, player_index)
+	mapper.bind(triggers.GAMEPAD_RSTICK_RIGHT, ACTION_RIGHT, player_index)
+	mapper.bind(triggers.GAMEPAD_RTRIGGER, ACTION_RIGHT, player_index)
+	mapper.bind(triggers.GAMEPAD_RSHOULDER, ACTION_RIGHT, player_index)
+	
+	mapper.bind(triggers.GAMEPAD_LSTICK_DOWN, ACTION_DOWN, player_index)
+	mapper.bind(triggers.GAMEPAD_LPAD_DOWN, ACTION_DOWN, player_index)
+	mapper.bind(triggers.GAMEPAD_RSTICK_DOWN, ACTION_DOWN, player_index)
+	
+	mapper.bind(triggers.GAMEPAD_LSTICK_UP, ACTION_UP, player_index)
+	mapper.bind(triggers.GAMEPAD_LPAD_UP, ACTION_UP, player_index)
+	mapper.bind(triggers.GAMEPAD_RSTICK_UP, ACTION_UP, player_index)
+
+	mapper.bind(triggers.GAMEPAD_RPAD_LEFT, ACTION_SELECT, player_index)
+	mapper.bind(triggers.GAMEPAD_RPAD_RIGHT, ACTION_SELECT, player_index)
+	mapper.bind(triggers.GAMEPAD_RPAD_DOWN, ACTION_SELECT, player_index)
+	mapper.bind(triggers.GAMEPAD_RPAD_UP, ACTION_SELECT, player_index)
+	mapper.bind(triggers.GAMEPAD_LSTICK_CLICK, ACTION_SELECT, player_index)
+	mapper.bind(triggers.GAMEPAD_RSTICK_CLICK, ACTION_SELECT, player_index)
+end
+
+local function bind_keyboard(player_index)
+	mapper.bind(triggers.KEY_LEFT, ACTION_LEFT, player_index)
+	mapper.bind(triggers.KEY_RIGHT, ACTION_RIGHT, player_index)
+	mapper.bind(triggers.KEY_UP, ACTION_UP, player_index)
+	mapper.bind(triggers.KEY_DOWN, ACTION_DOWN, player_index)
+	mapper.bind(triggers.KEY_A, ACTION_LEFT, player_index)
+	mapper.bind(triggers.KEY_D, ACTION_RIGHT, player_index)
+	mapper.bind(triggers.KEY_W, ACTION_UP, player_index)
+	mapper.bind(triggers.KEY_S, ACTION_DOWN, player_index)
+	mapper.bind(triggers.KEY_SPACE, ACTION_SELECT, player_index)
+end
+
+local function unbind_controls(player_index)
+	mapper.unbind_all(player_index)
+end
+
+local function champ_node(i, id)
+	return gui.get_node("champ" .. i .. "/" .. id)
+end
+
+local function disable(node)
+	gui.set_enabled(node, false)
+	return node
+end
+
+local function enable(node)
+	gui.set_enabled(node, true)
+	return node
+end
+
+local function cursor_on_node(node, cursor)
+	local pos = gui.get_position(cursor)
+	return gui.pick_node(node, pos.x, pos.y)
+end
+
+local function dump_available_champs(self)
+	local s = ""
+	for i=1,#self.available_champs do
+		s = s .. ("%d: %s\n"):format(i, self.available_champs[i].name)
+	end
+	print("Available:\n" .. s)
+end
+
+local function return_champ(self, champ)
+	table.insert(self.available_champs, champ)
+end
+
+local function next_available_champ(self)
+	return table.remove(self.available_champs, 1)
+end
+
+local function has_only_one_team(self)
+	local team = nil
+	for _,player in ipairs(self.players) do
+		if player.active then
+			if not team then
+				team = player.team
+			elseif player.team ~= team then
+				return false
+			end
+		end
+	end
+	return true
+end
+
+function init(self)
+	msg.post(".", "acquire_input_focus")
+	self.transition = transitions.create(gui.get_node("root"))
+	.show_in(transitions.slide_in_right, gui.EASING_OUTBACK, 0.5, 0)
+	.show_out(transitions.slide_out_left, gui.EASING_INBACK, 0.5, 0)
+	.back_in(transitions.slide_in_left, gui.EASING_OUTBACK, 0.5, 0)
+	.back_out(transitions.slide_out_right, gui.EASING_INBACK, 0.5, 0)
+
+	self.available_champs = {}
+	for _,champ in ipairs(champs.all()) do
+		self.available_champs[#self.available_champs + 1] = champ
+	end
+
+	self.players = {}
+	for i=1,4 do
+		local nodes = {}
+		local player = {}
+		player.index = i
+		player.nodes = nodes
+		player.controls = controls.NONE
+		player.active = false
+		player.ready = false
+		player.team = i
+		player.cursor = disable(gui.get_node("cursor" .. i ))
+		player.input = state.create()
+
+		gui.set_text(champ_node(i, "id"), "PLAYER " .. i)
+		nodes.root = champ_node(i, "root")
+		nodes.active = champ_node(i, "active")
+		nodes.inactive = champ_node(i, "inactive")
+		nodes.name = champ_node(i, "name")
+		nodes.champ = champ_node(i, "champ")
+		nodes.champ_hitbox = champ_node(i, "champ_hitbox")
+		nodes.team = champ_node(i, "team")
+		nodes.controls = champ_node(i, "controls")
+		nodes.ready = champ_node(i, "ready")
+		
+		gui.set_enabled(nodes.active, false)
+		table.insert(self.players, player)
+	end
+end
+
+function final(self)
+	for i,player in ipairs(self.players) do
+		unbind_controls(player.index)
+	end
+end
+
+function on_message(self, message_id, message, sender)
+	self.transition.handle(message_id, message, sender)
+end
+
+
+local function update_player(player)
+	local nodes = player.nodes
+	gui.set_enabled(nodes.active, player.active)
+	gui.set_enabled(nodes.inactive, not player.active)
+	if player.active then
+		if player.controls == controls.KEYBOARD then
+			gui.set_text(nodes.controls, "KEYBOARD")
+			gui.play_flipbook(nodes.controls, "keyboard")
+			gui.set_enabled(player.cursor, true)
+		elseif player.controls == controls.GAMEPAD then
+			gui.set_text(nodes.controls, "GAMEPAD " .. player.gamepad)
+			gui.play_flipbook(nodes.controls, "gamepad")
+			gui.set_enabled(player.cursor, true)
+		elseif player.controls == controls.CPU then
+			gui.set_text(nodes.controls, "CPU")
+			gui.play_flipbook(nodes.controls, "cpu")
+			gui.set_enabled(player.cursor, false)
+		else
+			gui.set_enabled(player.cursor, false)
+		end
+		gui.play_flipbook(nodes.champ, player.champ.idle)
+		gui.set_text(nodes.name, player.champ.name)
+		gui.play_flipbook(nodes.team, teams.flag(player.team))
+		if player.ready then
+			gui.set_text(nodes.ready, "READY!")
+		else
+			gui.set_text(nodes.ready, "READY?")
+		end
+	end
+end
+
+local function get_player_below_cursor(self, cursor)
+	for _,player in ipairs(self.players) do
+		for _,node in pairs(player.nodes) do
+			if cursor_on_node(node, cursor) then
+				return player
+			end
+		end
+	end
+end
+
+local function get_player_for_input(self, action_id, action)
+	local is_key = triggers.is_key(action_id)
+	local is_gamepad = triggers.is_gamepad(action_id)
+	for _,player in ipairs(self.players) do
+		if is_key then
+			if player.controls == controls.KEYBOARD then
+				return player
+			end
+		elseif is_gamepad then
+			if player.controls == controls.GAMEPAD and player.gamepad == action.gamepad then
+				return player
+			end
+		end
+	end
+end
+
+local function deactivate_player(self, player)
+	print("deactivate_player")
+	return_champ(self, player.champ)
+	player.active = false
+	player.controls = controls.NONE
+	player.gamepad = nil
+	update_player(player)
+end
+
+local function activate_cpu(self, player)
+	player.active = true
+	player.ready = true
+	player.controls = controls.CPU
+	player.champ = next_available_champ(self)
+	update_player(player)
+end
+
+local function activate_player(self, action_id, action)
+	local is_key = triggers.is_key(action_id)
+	local is_gamepad = triggers.is_gamepad(action_id)
+	if not (is_key or is_gamepad) then
+		return
+	end
+
+	-- skip if this control method (and individual gamepad) is in use already
+	local player = get_player_for_input(self, action_id, action)
+	if player then
+		return
+	end
+
+	-- activate first free champ
+	for _,player in ipairs(self.players) do
+		if player.controls == controls.CPU then
+			deactivate_player(self, player)
+		end
+		if player.controls == controls.NONE then
+			if is_key then
+				player.controls = controls.KEYBOARD
+				bind_keyboard(player.index)
+			elseif is_gamepad then
+				player.controls = controls.GAMEPAD
+				player.gamepad = action.gamepad
+				bind_gamepad(player.index)
+			end
+			player.champ = next_available_champ(self)
+			player.active = true
+			gui.set_position(player.cursor, gui.get_position(player.nodes.root))
+			update_player(player)
+			return
+		end
+	end
+end
+
+function update(self, dt)
+	-- move cursors
+	for i=1,4 do
+		local player = self.players[i]
+		if player.active then
+			local pos = gui.get_position(player.cursor)
+			if state.is_pressed(ACTION_LEFT, player.input) then
+				pos.x = pos.x - 300 * dt
+			elseif state.is_pressed(ACTION_RIGHT, player.input) then
+				pos.x = pos.x + 300 * dt
+			end
+			if state.is_pressed(ACTION_UP, player.input) then
+				pos.y = pos.y + 300 * dt
+			elseif state.is_pressed(ACTION_DOWN, player.input) then
+				pos.y = pos.y - 300 * dt
+			end
+			pos.x = util.clamp(pos.x, 0, 800)
+			pos.y = util.clamp(pos.y, 0, 640)
+			gui.set_position(player.cursor, pos)
+		end
+	end
+end
+
+function on_input(self, action_id, action)
+	if not action_id then
+		return
+	end
+
+	local me = get_player_for_input(self, action_id, action)
+	-- enable new player
+	if not me then
+		if action.released then
+			activate_player(self, action_id, action)
+		end
+		return
+	end
+
+	-- deactivate player if gamepad is disconnected
+	if action_id == triggers.GAMEPAD_DISCONNECTED then
+		deactivate_player(self, me)
+		return
+	end
+
+	local action_id = mapper.on_input(action_id, me.index)
+	state.on_input(action_id, action, me.input)
+
+	-- selection handling
+	if action_id == ACTION_SELECT and action.released then
+		local player = me
+		-- figure out which player we are editing
+		-- our own player or a CPU controlled player
+		local other = get_player_below_cursor(self, me.cursor)
+		if other and other ~= me then
+			if not other.active then
+				activate_cpu(self, other)
+				return
+			end
+			if other.controls == controls.CPU then
+				player = other
+			end
+		end
+
+		-- check for selections on the player in question
+		if cursor_on_node(player.nodes.champ_hitbox, me.cursor) then
+			return_champ(self, player.champ)
+			player.champ = next_available_champ(self)
+			update_player(player)
+		elseif cursor_on_node(player.nodes.team, me.cursor) then
+			local team_count = teams.count()
+			player.team = 1 + (player.team % team_count)
+			if has_only_one_team(self) then
+				player.team = 1 + (player.team % team_count)
+			end
+			update_player(player)
+		elseif cursor_on_node(player.nodes.controls, me.cursor) then
+			if player.controls == controls.CPU then
+				deactivate_player(self, player)
+			end
+		elseif cursor_on_node(player.nodes.ready, me.cursor) then
+			-- CPU players are always ready
+			if player == me then
+				if not has_only_one_team(self) then
+					player.ready = not player.ready
+					update_player(player)
+				end
+			end
+		end
+
+		local ready = true
+		local ready_count = 0
+		for _,player in ipairs(self.players) do
+			if player.active then
+				if not player.ready then
+					ready = false
+					break
+				else
+					ready_count = ready_count + 1
+				end
+			end
+		end
+
+		if ready and ready_count > 1 then
+			local data = {}
+			for i,player in ipairs(self.players) do
+				if player.active then
+					data[#data + 1] = {
+						index = player.index,
+						champ = player.champ.id,
+						controls = player.controls,
+						gamepad = player.gamepad,
+						team = player.team,
+					}
+				end
+			end
+			monarch.show("game", { clear = true }, data)
+		end
+	end
+end
+
+function on_reload(self)
+	-- Add input-handling code here
+	-- Remove this function if not needed
+end

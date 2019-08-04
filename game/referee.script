@@ -1,18 +1,29 @@
 local groups = require "game.groups"
 local messages = require "game.messages"
 local logger = require "ludobits.m.logger"
+local sequence = require "ludobits.m.sequence"
 
 local log = logger.create("[referee]")
+
+local function play_flipbook(self, anim)
+	if self.current_animation ~= anim then
+		self.current_animation = anim
+		sprite.play_flipbook("#sprite", anim)
+	end
+end
 
 function init(self)
 	self.speed = 30
 	self.champs = {}
 end
 
-
 function update(self, dt)
+	if self.idle then
+		return
+	end
+	
 	-- calculate a mid position for all champs
-	local mid = go.get_position()
+	local mid = vmath.vector3()
 	local count = 1
 	for champ,_ in pairs(self.champs) do
 		mid = mid + go.get_position(champ)
@@ -24,17 +35,26 @@ function update(self, dt)
 
 	-- position referee offset from the mid position
 	local pos = go.get_position()
-	local diff = mid - pos
+	local a = math.atan2(mid.y - pos.y, mid.x - pos.x)
+	local target = mid + vmath.vector3(math.sin(a), math.cos(a), 0) * 40
+
+	local diff = target - pos
+	local dir = vmath.normalize(diff)
 	local distance = vmath.length(diff)
-	if distance > 0 then
-		-- offset so that referee doesn't stand in the middle
-		diff.x = diff.x + 20
-		diff.y = diff.y + 20
-		local dir = vmath.normalize(diff)
+	if distance > 5 then
+		play_flipbook(self, "referee_walk")
 		pos = pos + dir * self.speed * dt
+		pos.z = 1 - pos.y / 640
+		go.set_position(pos)
+	else
+		log("idle")
+		sequence.run_once(function()
+			self.idle = true
+			play_flipbook(self, "referee_idle")
+			sequence.delay(0.8)
+			self.idle = false
+		end)
 	end
-	pos.z = 1 - pos.y / 640
-	go.set_position(pos)
 end
 
 function on_message(self, message_id, message, sender)

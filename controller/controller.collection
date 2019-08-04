@@ -56,6 +56,16 @@ embedded_instances {
   "    value: \"title\"\n"
   "    type: PROPERTY_TYPE_HASH\n"
   "  }\n"
+  "  properties {\n"
+  "    id: \"popup\"\n"
+  "    value: \"true\"\n"
+  "    type: PROPERTY_TYPE_BOOLEAN\n"
+  "  }\n"
+  "  properties {\n"
+  "    id: \"transition_url\"\n"
+  "    value: \"title:/go#title\"\n"
+  "    type: PROPERTY_TYPE_URL\n"
+  "  }\n"
   "}\n"
   "embedded_components {\n"
   "  id: \"collectionproxy\"\n"
@@ -119,6 +129,137 @@ embedded_instances {
   "  id: \"collectionproxy\"\n"
   "  type: \"collectionproxy\"\n"
   "  data: \"collection: \\\"/game/game.collection\\\"\\n"
+  "exclude: false\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  ""
+  position {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+embedded_instances {
+  id: "pregame"
+  data: "components {\n"
+  "  id: \"screen_proxy\"\n"
+  "  component: \"/monarch/screen_proxy.script\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "  properties {\n"
+  "    id: \"screen_id\"\n"
+  "    value: \"pregame\"\n"
+  "    type: PROPERTY_TYPE_HASH\n"
+  "  }\n"
+  "  properties {\n"
+  "    id: \"popup\"\n"
+  "    value: \"true\"\n"
+  "    type: PROPERTY_TYPE_BOOLEAN\n"
+  "  }\n"
+  "  properties {\n"
+  "    id: \"transition_url\"\n"
+  "    value: \"pregame:/go#pregame\"\n"
+  "    type: PROPERTY_TYPE_URL\n"
+  "  }\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"collectionproxy\"\n"
+  "  type: \"collectionproxy\"\n"
+  "  data: \"collection: \\\"/pregame/pregame.collection\\\"\\n"
+  "exclude: false\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  ""
+  position {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+embedded_instances {
+  id: "menubg"
+  data: "components {\n"
+  "  id: \"screen_proxy\"\n"
+  "  component: \"/monarch/screen_proxy.script\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "  properties {\n"
+  "    id: \"screen_id\"\n"
+  "    value: \"menubg\"\n"
+  "    type: PROPERTY_TYPE_HASH\n"
+  "  }\n"
+  "  properties {\n"
+  "    id: \"transition_url\"\n"
+  "    value: \"menubg:/go#menubg\"\n"
+  "    type: PROPERTY_TYPE_URL\n"
+  "  }\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"collectionproxy\"\n"
+  "  type: \"collectionproxy\"\n"
+  "  data: \"collection: \\\"/menubg/menubg.collection\\\"\\n"
   "exclude: false\\n"
   "\"\n"
   "  position {\n"

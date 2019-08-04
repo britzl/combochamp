@@ -10,12 +10,11 @@ function init(self)
 	soundcontroller.sound_group(sounds.BELL, { "#bell" })
 	soundcontroller.sound_group(sounds.MISS, { "#miss1" })
 	soundcontroller.sound_group(sounds.THUD, { "#thud1", "#thud2" })
-	soundcontroller.sound_group(sounds.CHEER, { "#cheer1", "#cheer2" }, { gate_time = 5 })
+	soundcontroller.sound_group(sounds.CHEER, { "#cheer1" }, { gate_time = 5 })
 		
 	sound.set_group_gain("sfx", 1.0)
 
 	soundcontroller.play_all(sounds.AUDIENCE)
-	pprint(sounds)
 end
 
 function update(self, dt)
