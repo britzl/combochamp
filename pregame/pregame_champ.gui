@@ -229,7 +229,7 @@ nodes {
   pivot: PIVOT_CENTER
   adjust_mode: ADJUST_MODE_FIT
   parent: "active"
-  layer: "below"
+  layer: "champs"
   inherit_alpha: true
   slice9 {
     x: 0.0
@@ -709,13 +709,16 @@ nodes {
   text_tracking: 0.0
 }
 layers {
-  name: "shadow"
-}
-layers {
   name: "below"
 }
 layers {
   name: "text"
+}
+layers {
+  name: "shadow"
+}
+layers {
+  name: "champs"
 }
 material: "/builtins/materials/gui.material"
 adjust_reference: ADJUST_REFERENCE_PARENT

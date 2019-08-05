@@ -144,7 +144,7 @@ nodes {
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "champs/announcer_mic"
+  texture: "game/transparent1px"
   id: "champ3/root"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_TOP
@@ -302,14 +302,14 @@ nodes {
     w: 1.0
   }
   color {
-    x: 0.5019608
-    y: 0.0
-    z: 0.0
+    x: 1.0
+    y: 1.0
+    z: 1.0
     w: 1.0
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "game/white_1px"
+  texture: "game/darkred_1px"
   id: "champ3/health_max"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
@@ -358,13 +358,13 @@ nodes {
   }
   color {
     x: 1.0
-    y: 0.0
-    z: 0.0
+    y: 1.0
+    z: 1.0
     w: 1.0
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "game/white_1px"
+  texture: "game/red_1px"
   id: "champ3/health"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
@@ -530,14 +530,14 @@ nodes {
     w: 1.0
   }
   color {
-    x: 0.4
-    y: 0.5019608
-    z: 0.9019608
+    x: 1.0
+    y: 1.0
+    z: 1.0
     w: 1.0
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "game/white_1px"
+  texture: "game/blue_1px"
   id: "champ3/boost"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
@@ -632,7 +632,7 @@ nodes {
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "champs/announcer_mic"
+  texture: "game/transparent1px"
   id: "champ1/root"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_TOP
@@ -790,14 +790,14 @@ nodes {
     w: 1.0
   }
   color {
-    x: 0.5019608
-    y: 0.0
-    z: 0.0
+    x: 1.0
+    y: 1.0
+    z: 1.0
     w: 1.0
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "game/white_1px"
+  texture: "game/darkred_1px"
   id: "champ1/health_max"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
@@ -846,13 +846,13 @@ nodes {
   }
   color {
     x: 1.0
-    y: 0.0
-    z: 0.0
+    y: 1.0
+    z: 1.0
     w: 1.0
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "game/white_1px"
+  texture: "game/red_1px"
   id: "champ1/health"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
@@ -1018,14 +1018,14 @@ nodes {
     w: 1.0
   }
   color {
-    x: 0.4
-    y: 0.5019608
-    z: 0.9019608
+    x: 1.0
+    y: 1.0
+    z: 1.0
     w: 1.0
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "game/white_1px"
+  texture: "game/blue_1px"
   id: "champ1/boost"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
@@ -1120,7 +1120,7 @@ nodes {
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "champs/announcer_mic"
+  texture: "game/transparent1px"
   id: "champ2/root"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_TOP
@@ -1278,14 +1278,14 @@ nodes {
     w: 1.0
   }
   color {
-    x: 0.5019608
-    y: 0.0
-    z: 0.0
+    x: 1.0
+    y: 1.0
+    z: 1.0
     w: 1.0
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "game/white_1px"
+  texture: "game/darkred_1px"
   id: "champ2/health_max"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
@@ -1334,13 +1334,13 @@ nodes {
   }
   color {
     x: 1.0
-    y: 0.0
-    z: 0.0
+    y: 1.0
+    z: 1.0
     w: 1.0
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "game/white_1px"
+  texture: "game/red_1px"
   id: "champ2/health"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
@@ -1506,14 +1506,14 @@ nodes {
     w: 1.0
   }
   color {
-    x: 0.4
-    y: 0.5019608
-    z: 0.9019608
+    x: 1.0
+    y: 1.0
+    z: 1.0
     w: 1.0
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "game/white_1px"
+  texture: "game/blue_1px"
   id: "champ2/boost"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
@@ -1608,7 +1608,7 @@ nodes {
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "champs/announcer_mic"
+  texture: "game/transparent1px"
   id: "champ4/root"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_TOP
@@ -1766,14 +1766,14 @@ nodes {
     w: 1.0
   }
   color {
-    x: 0.5019608
-    y: 0.0
-    z: 0.0
+    x: 1.0
+    y: 1.0
+    z: 1.0
     w: 1.0
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "game/white_1px"
+  texture: "game/darkred_1px"
   id: "champ4/health_max"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
@@ -1822,13 +1822,13 @@ nodes {
   }
   color {
     x: 1.0
-    y: 0.0
-    z: 0.0
+    y: 1.0
+    z: 1.0
     w: 1.0
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "game/white_1px"
+  texture: "game/red_1px"
   id: "champ4/health"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
@@ -1994,14 +1994,14 @@ nodes {
     w: 1.0
   }
   color {
-    x: 0.4
-    y: 0.5019608
-    z: 0.9019608
+    x: 1.0
+    y: 1.0
+    z: 1.0
     w: 1.0
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "game/white_1px"
+  texture: "game/blue_1px"
   id: "champ4/boost"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE

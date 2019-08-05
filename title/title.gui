@@ -283,7 +283,7 @@ nodes {
   pivot: PIVOT_CENTER
   adjust_mode: ADJUST_MODE_FIT
   parent: "champ1"
-  layer: "below"
+  layer: "champs"
   inherit_alpha: true
   slice9 {
     x: 0.0
@@ -392,7 +392,7 @@ nodes {
   pivot: PIVOT_CENTER
   adjust_mode: ADJUST_MODE_FIT
   parent: "champ2"
-  layer: "below"
+  layer: "champs"
   inherit_alpha: true
   slice9 {
     x: 0.0
@@ -501,7 +501,7 @@ nodes {
   pivot: PIVOT_CENTER
   adjust_mode: ADJUST_MODE_FIT
   parent: "champ3"
-  layer: "below"
+  layer: "champs"
   inherit_alpha: true
   slice9 {
     x: 0.0
@@ -610,7 +610,7 @@ nodes {
   pivot: PIVOT_CENTER
   adjust_mode: ADJUST_MODE_FIT
   parent: "champ4"
-  layer: "below"
+  layer: "champs"
   inherit_alpha: true
   slice9 {
     x: 0.0

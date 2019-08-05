@@ -50,7 +50,7 @@ nodes {
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "champs/announcer_mic"
+  texture: "game/transparent1px"
   id: "root"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_TOP
@@ -207,14 +207,14 @@ nodes {
     w: 1.0
   }
   color {
-    x: 0.5019608
-    y: 0.0
-    z: 0.0
+    x: 1.0
+    y: 1.0
+    z: 1.0
     w: 1.0
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "game/white_1px"
+  texture: "game/darkred_1px"
   id: "health_max"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
@@ -263,13 +263,13 @@ nodes {
   }
   color {
     x: 1.0
-    y: 0.0
-    z: 0.0
+    y: 1.0
+    z: 1.0
     w: 1.0
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "game/white_1px"
+  texture: "game/red_1px"
   id: "health"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
@@ -435,14 +435,14 @@ nodes {
     w: 1.0
   }
   color {
-    x: 0.4
-    y: 0.5019608
-    z: 0.9019608
+    x: 1.0
+    y: 1.0
+    z: 1.0
     w: 1.0
   }
   type: TYPE_BOX
   blend_mode: BLEND_MODE_ALPHA
-  texture: "game/white_1px"
+  texture: "game/blue_1px"
   id: "boost"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE

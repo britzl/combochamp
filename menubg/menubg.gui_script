@@ -3,6 +3,7 @@ local transitions = require "monarch.transitions.gui"
 
 
 function init(self)
+	gui.set_render_order(0)
 	self.transition = transitions.create()
 		.show_in(gui.get_node("bg"), transitions.fade_in, gui.EASING_INOUTQUAD, 0.5, 0)
 		.back_in(gui.get_node("bg"), transitions.fade_in, gui.EASING_INOUTQUAD, 0.5, 0)

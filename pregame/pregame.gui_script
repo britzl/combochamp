@@ -112,6 +112,7 @@ end
 
 function init(self)
 	msg.post(".", "acquire_input_focus")
+	gui.set_render_order(1)
 	self.transition = transitions.create(gui.get_node("root"))
 	.show_in(transitions.slide_in_right, gui.EASING_OUTBACK, 0.5, 0)
 	.show_out(transitions.slide_out_left, gui.EASING_INBACK, 0.5, 0)

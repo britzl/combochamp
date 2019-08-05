@@ -61,6 +61,18 @@ images {
 images {
   image: "/assets/images/ring/gradient_floor.png"
 }
+images {
+  image: "/assets/images/hud/purple_1px.png"
+}
+images {
+  image: "/assets/images/hud/red_1px.png"
+}
+images {
+  image: "/assets/images/hud/blue_1px.png"
+}
+images {
+  image: "/assets/images/hud/darkred_1px.png"
+}
 margin: 0
 extrude_borders: 2
 inner_padding: 0
