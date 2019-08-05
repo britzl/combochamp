@@ -268,34 +268,6 @@ animations {
   flip_vertical: 0
 }
 animations {
-  id: "terry_brogan_kick"
-  images {
-    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_kick0.png"
-  }
-  images {
-    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_kick1.png"
-  }
-  images {
-    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_kick2.png"
-  }
-  images {
-    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_kick3.png"
-  }
-  images {
-    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_kick4.png"
-  }
-  images {
-    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_kick4.png"
-  }
-  images {
-    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_kick4.png"
-  }
-  playback: PLAYBACK_ONCE_PINGPONG
-  fps: 15
-  flip_horizontal: 0
-  flip_vertical: 0
-}
-animations {
   id: "terry_brogan_walk_lifting"
   images {
     image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_walk_lifting0.png"

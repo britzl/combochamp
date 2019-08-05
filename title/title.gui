@@ -160,7 +160,7 @@ nodes {
   blend_mode: BLEND_MODE_ALPHA
   text: "(C) 2019 8-BIT COUNCIL TM | REGION-FREE CARTRIDGE | MULTI-LANGUAGE\n"
   "KW750002 | MADE IN SWEDEN & USA\n"
-  "CODE: BJORN RITZL - ART: KEITH WOODS"
+  "CODE: BJORN RITZL - ART: KEITH WOOD - MUSIC: KEITH WOOD"
   font: "game"
   id: "copyright"
   xanchor: XANCHOR_NONE
@@ -228,7 +228,7 @@ nodes {
   yanchor: YANCHOR_NONE
   pivot: PIVOT_CENTER
   adjust_mode: ADJUST_MODE_FIT
-  layer: "above"
+  layer: "champs"
   inherit_alpha: true
   slice9 {
     x: 0.0
@@ -337,7 +337,7 @@ nodes {
   yanchor: YANCHOR_NONE
   pivot: PIVOT_CENTER
   adjust_mode: ADJUST_MODE_FIT
-  layer: "above"
+  layer: "champs"
   inherit_alpha: true
   slice9 {
     x: 0.0
@@ -446,7 +446,7 @@ nodes {
   yanchor: YANCHOR_NONE
   pivot: PIVOT_CENTER
   adjust_mode: ADJUST_MODE_FIT
-  layer: "above"
+  layer: "champs"
   inherit_alpha: true
   slice9 {
     x: 0.0
@@ -555,7 +555,7 @@ nodes {
   yanchor: YANCHOR_NONE
   pivot: PIVOT_CENTER
   adjust_mode: ADJUST_MODE_FIT
-  layer: "above"
+  layer: "champs"
   inherit_alpha: true
   slice9 {
     x: 0.0
@@ -694,7 +694,7 @@ layers {
   name: "text"
 }
 layers {
-  name: "above"
+  name: "champs"
 }
 material: "/builtins/materials/gui.material"
 adjust_reference: ADJUST_REFERENCE_PARENT

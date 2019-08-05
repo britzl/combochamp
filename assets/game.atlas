@@ -53,9 +53,6 @@ images {
   image: "/assets/images/ring/ring_purple.png"
 }
 images {
-  image: "/assets/images/ring/gradient.png"
-}
-images {
   image: "/assets/images/white_1px.png"
 }
 images {
