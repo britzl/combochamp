@@ -1,9 +1,11 @@
 local monarch = require "monarch.monarch"
 local sounds = require "game.sounds"
 local champs = require "game.champs"
+local sequence = require "ludobits.m.sequence"
+local directions = require "game.directions"
 
 local RING_CORNERS = {
-	{ x = -60, y = -40 },
+	{ x = -100, y = -90 },
 	{ x = 60, y = -40 },
 	{ x = -60, y = 50 },
 	{ x = 60, y = 50 },
@@ -72,5 +74,18 @@ function init(self)
 
 	timer.delay(0, false, function()
 		sounds.bell()
+	end)
+
+	sequence.run_loop(function()
+		--sequence.delay(1)
+		sequence.delay(math.random(10, 60))
+		local dir = directions.random()
+		local pos = vmath.vector3(dir.x * -200, dir.y * -190, 0)
+		if dir.x ~= 0 then
+			pos.y = pos.y + math.random(-50, 50)
+		elseif dir.y ~= 0 then
+			pos.x = pos.x + math.random(-50, 50)
+		end
+		factory.create("#spectatorfactory", pos, nil, { direction = dir })
 	end)
 end

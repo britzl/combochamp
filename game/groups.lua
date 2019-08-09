@@ -7,5 +7,6 @@ M.CHAMP = hash("champ")
 M.ATTACK = hash("attack")
 M.SPECIAL = hash("special")
 M.REFEREE = hash("referee")
+M.CHAIR = hash("chair")
 
 return M

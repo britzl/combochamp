@@ -238,7 +238,7 @@ embedded_components {
   }
 }
 embedded_components {
-  id: "champdetector"
+  id: "nearbydetector"
   type: "collisionobject"
   data: "collision_shape: \"\"\n"
   "type: COLLISION_OBJECT_TYPE_TRIGGER\n"
@@ -247,6 +247,7 @@ embedded_components {
   "restitution: 0.5\n"
   "group: \"champ\"\n"
   "mask: \"champ\"\n"
+  "mask: \"chair\"\n"
   "embedded_collision_shape {\n"
   "  shapes {\n"
   "    shape_type: TYPE_SPHERE\n"

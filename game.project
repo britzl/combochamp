@@ -23,6 +23,7 @@ gravity_y = -1000.0
 scale = 0.02
 max_collisions = 64
 debug_alpha = 0.6
+debug = 0
 
 [osx]
 bundle_identifier = com.britzl.combochamp
@@ -39,4 +40,7 @@ gamepads = /in/gamepads/in.gamepadsc
 [graphics]
 default_texture_min_filter = nearest
 default_texture_mag_filter = nearest
+
+[sprite]
+max_count = 512
 

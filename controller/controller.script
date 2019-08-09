@@ -11,10 +11,10 @@ local function show_game()
 			champ = champs.TERRY_BROGAN,
 			team = 1,
 		},
-		--[[{
+		{
 			index = 2,
 			controls = controls.CPU,
-			champ = champs.GREEN_GORGON,
+			champ = champs.BRETT_AMOR,
 			team = 2,
 		},
 		{
@@ -26,9 +26,10 @@ local function show_game()
 		{
 			index = 4,
 			controls = controls.CPU,
-			champ = champs.GREEN_GORGON,
+			champ = champs.MARK_DEVOTION,
 			team = 4,
-		},--]]
+		},
+		--[[--]]
 	}
 	monarch.show("game", nil, players)
 end

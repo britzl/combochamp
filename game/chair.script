@@ -1,0 +1,33 @@
+local messages = require "game.messages"
+local groups = require "game.groups"
+local logger = require "ludobits.m.logger"
+
+local log = logger.create("[chair]")
+
+function init(self)
+	msg.post("#pickup", "disable")
+	msg.post("#damage", "disable")
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == messages.LIFTED then
+		log("lifted")
+		timer.cancel(self.destroy_timer)
+		msg.post("#pickup", "disable")
+		msg.post("#shadow", "disable")
+	elseif message_id == messages.THROWN then
+		log("thrown")
+		msg.post("#damage", "enable")
+		self.thrown_by = sender.path
+	elseif message_id == messages.ACTIVATE then
+		msg.post("#pickup", "enable")
+		self.destroy_timer = timer.delay(60, false, function()
+			go.delete()
+		end)
+	elseif message_id == messages.COLLISION_RESPONSE then
+		if message.own_group == groups.SPECIAL
+		and message.other_id ~= self.thrown_by then
+			go.delete()
+		end
+	end
+end

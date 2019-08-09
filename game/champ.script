@@ -30,11 +30,6 @@ local messages = require "game.messages"
 
 local log = nil
 
-local MSG_DOWN = hash("down")
-local MSG_DAMAGE = hash("damage")
-local MSG_LIFTED = hash("lifted")
-local MSG_THROWN = hash("thrown")
-
 local BOOST_THROW = 5
 local BOOST_NORMAL_DAMAGE = 2
 local BOOST_SPECIAL_DAMAGE = 10
@@ -84,6 +79,7 @@ local function is_down(id) return get_champ(id).down end
 local function is_running(id) return get_champ(id).running end
 local function is_attacking(id) return get_champ(id).attacking end
 local function is_lifting_champ(id) return get_champ(id).lifting_champ end
+local function is_lifting_chair(id) return get_champ(id).lifting_chair end
 local function is_jumping(id) return get_champ(id).jumping end
 local function is_busy(id) return get_champ(id).busy end
 local function is_opponent(id) return get_champ().team ~= get_champ(id).team end
@@ -162,9 +158,9 @@ local function increase_boost(self, amount)
 end
 
 local function throw_champ(self)
-	if is_lifting_champ(id) then
+	if is_lifting_champ() then
 		sequence.run_once(function()
-			log("throw")
+			log("throw champ")
 			sounds.thud()
 			increase_boost(self, BOOST_THROW)
 			local pos = go.get_position()
@@ -178,24 +174,58 @@ local function throw_champ(self)
 				go.animate(champ, "position.y", go.PLAYBACK_ONCE_FORWARD, pos.y + 40 * self.direction.y, go.EASING_OUTBOUNCE, 0.35)
 			end
 			sequence.delay(0.35)
-			msg.post(champ, MSG_THROWN)
+			msg.post(champ, messages.THROWN)
+		end)
+	end
+end
+
+
+local function throw_chair(self)
+	if is_lifting_chair() then
+		local chair = self.lifting_chair
+		self.lifting_chair = nil
+		self.thrown_chairs[chair] = true
+		go.set_parent(chair, nil, true)
+		sequence.run_once(function()
+			log("throw chair")
+			increase_boost(self, BOOST_THROW)
+			local pos = go.get_position()
+			sequence.delay(0)
+			msg.post(chair, messages.THROWN)
+			if self.direction.x ~= 0 then
+				go.set_rotation(vmath.quat_rotation_z(math.rad(-90 * self.direction.x)), chair)
+				sequence.go_animate(chair, "position.x", go.PLAYBACK_ONCE_FORWARD, pos.x + 300 * self.direction.x, go.EASING_LINEAR, 1.5)
+			else
+				sequence.go_animate(chair, "position.y", go.PLAYBACK_ONCE_FORWARD, pos.y + 300 * self.direction.y, go.EASING_LINEAR, 1.5)
+			end
+			self.thrown_chairs[chair] = nil
+			go.delete(chair)
 		end)
 	end
 end
 
 local function lift_champ(self, champ)
 	log("lifing champ")
-	msg.post(champ, MSG_LIFTED)
+	msg.post(champ, messages.LIFTED)
 	self.lifting_champ = champ
 	go.set_parent(champ, go.get_id(), false)
 	go.set_position(vmath.vector3(0, 14, 0), champ)
 end
 
+local function lift_chair(self, chair)
+	log("lifing chair")
+	assert(not self.lifting_chair)
+	assert(chair)
+	msg.post(chair, messages.LIFTED)
+	self.lifting_chair = chair
+	go.set_parent(chair, go.get_id(), false)
+	go.set_position(vmath.vector3(0, 17, 0), chair)
+end
+
 local function climb_ring_post(self, post)
 	sequence.run_once(function()
-		if is_lifting_champ() then
-			throw_champ(self)
-		end
+		throw_champ(self)
+		throw_chair(self)
 		increase_boost(self, BOOST_CLIMB_RING_POST)
 		self.busy = true
 		self.on_ring_post = true
@@ -335,10 +365,12 @@ local function handle_action(self, action_id, action)
 	-- punch
 	elseif action_id == actions.A then
 		if action.pressed then
-			local nearby = next(self.nearby)
+			local nearby = next(self.nearby_champ)
 			if is_lifting_champ() then
 				throw_champ(self)
-			elseif nearby and is_down(nearby) then
+			elseif is_lifting_chair() then
+				throw_chair(self)
+			elseif nearby and is_down(nearby) and not is_lifting_chair() then
 				lift_champ(self, nearby)
 			elseif is_on_ring_post() then
 				jump_from_ring_post(self)
@@ -348,7 +380,7 @@ local function handle_action(self, action_id, action)
 		end
 	elseif action_id == actions.B then
 		if action.pressed then
-			local nearby = next(self.nearby)
+			local nearby = next(self.nearby_champ)
 			if not nearby then
 				taunt(self)
 			elseif is_down(nearby) then
@@ -441,7 +473,7 @@ local function regenerate_damage(self, dt)
 	update_hud(self)
 end
 
-local function take_damage(self, amount, source, props)
+local function take_damage(self, amount, source)
 	if self.down then
 		return
 	end
@@ -452,16 +484,24 @@ local function take_damage(self, amount, source, props)
 			log("down")
 			self.down = true
 			throw_champ(self)
+			throw_chair(self)
 			play_flipbook(self, "down")
 		end)
 	end
 	update_hud(self)
 	sounds.cheer()
 
+	local dir = direction(go.get_id(), source)
+	if math.abs(dir.x) > math.abs(dir.y) then
+		dir.y = 0
+	else
+		dir.x = 0
+	end
+
 	-- stun
 	sequence.run_once(function()
 		self.stunned = true
-		local left = (go.get_position() - go.get_position(source)).x > 0
+		local left = dir.x > 0
 		enable(left and "#lefthit" or "#righthit")
 		sequence.delay(0.25)
 		disable(left and "#lefthit" or "#righthit")
@@ -470,9 +510,9 @@ local function take_damage(self, amount, source, props)
 
 	-- pushback
 	sequence.run_once(function()
-		self.current_max_speed = self.initial_max_speed * 6
+		self.current_max_speed = self.initial_max_speed * 2 * math.sqrt(amount)
 		self.current_speed_lerp = 0
-		self.speed = (props.pushback or V3_ONE) * self.current_max_speed
+		self.speed = dir * -self.current_max_speed
 		sequence.delay(0.10)
 		self.current_speed_lerp = self.initial_speed_lerp
 		self.current_max_speed = self.initial_max_speed
@@ -516,7 +556,8 @@ function init(self)
 	CHAMPS.lookup[go.get_id()] = self
 	CHAMPS.all[#CHAMPS.all + 1] = self
 	self.id = go.get_id()
-	self.nearby = {}
+	self.nearby_champ = {}
+	self.thrown_chairs = {}
 	self.in_ring = false
 	self.last_action_time = nil
 	self.last_action = nil
@@ -580,13 +621,14 @@ function update(self, dt)
 	end
 
 	if not is_attacking() and not is_jumping() then
+		local lifting_something = is_lifting_champ() or is_lifting_chair()
 		if is_on_ring_post() then
 			play_flipbook(self, "taunt")
 		elseif is_idle() then
-			play_flipbook(self, is_lifting_champ() and "idle_lifting" or "idle")
+			play_flipbook(self, lifting_something and "idle_lifting" or "idle")
 		elseif is_moving() then
 			--log("WALK DAMMIT", self.speed)
-			play_flipbook(self, is_lifting_champ() and "walk_lifting" or "walk")
+			play_flipbook(self, lifting_something and "walk_lifting" or "walk")
 		end
 	end
 
@@ -666,24 +708,32 @@ function on_message(self, message_id, message, sender)
 				log("clothesline!")
 				sounds.punch()
 				increase_boost(self, BOOST_SPECIAL_DAMAGE)
-				msg.post(message.other_id, MSG_DAMAGE, { amount = 30, pushback = dir })
 			else
 				log("hit!")
 				sounds.punch()
 				increase_boost(self, BOOST_NORMAL_DAMAGE)
-				msg.post(message.other_id, MSG_DAMAGE, { amount = 10, pushback = dir })
 				stop(self)
 			end
 			self.attacking = false
 		-- this champ hit another champ with a special attack
 		elseif message.own_group == groups.SPECIAL
 		and message.other_group == groups.CHAMP
-		and message.other_id ~= go.get_id() then
+		and not is_down(message.other_id)
+		and is_opponent(message.other_id) then
 			log("special!")
 			sounds.punch()
 			increase_boost(self, BOOST_SPECIAL_DAMAGE)
-			msg.post(message.other_id, MSG_DAMAGE, { amount = 50 })
 			self.attacking = false
+		-- this champ was hit by a special attack
+		elseif message.other_group == groups.SPECIAL then
+			if not self.thrown_chairs[message.other_id] then
+				log("hit by special")
+				take_damage(self, 50, message.other_id)
+			end
+		-- this champ was hit by an attack
+		elseif message.other_group == groups.ATTACK then
+			take_damage(self, 10, message.other_id)
+		-- this champ came in contact with the ring post
 		elseif message.other_group == groups.POST then
 			if not is_in_ring() then
 				go.set_position(go.get_position() + message.normal * message.distance)
@@ -694,25 +744,29 @@ function on_message(self, message_id, message, sender)
 	elseif message_id == messages.TRIGGER_RESPONSE then
 		-- nearby another champ
 		if message.other_group == groups.CHAMP then
-			if not is_me(message.other_id) and is_opponent(message.other_id) then
+			if not is_me(message.other_id)
+			and is_opponent(message.other_id) then
 				if message.enter then
-					self.nearby[message.other_id] = true
+					self.nearby_champ[message.other_id] = true
 				else
-					self.nearby[message.other_id] = nil
+					self.nearby_champ[message.other_id] = nil
 				end
 			end
 		-- inside ring
 		elseif message.other_group == groups.RING then
 			self.in_ring = message.enter
+		elseif message.other_group == groups.CHAIR then
+			if not is_lifting_chair()
+			and not is_lifting_champ()
+			and not is_down() then
+				lift_chair(self, message.other_id)
+			end
 		end
-	elseif message_id == MSG_DAMAGE then
-		take_damage(self, message.amount, sender, message)
-	elseif message_id == MSG_LIFTED then
+	elseif message_id == messages.LIFTED then
 		log("lifted")
 		disable("#shadow")
 		disable("#champcollider")
-		self.lifted = true
-	elseif message_id == MSG_THROWN then
+	elseif message_id == messages.THROWN then
 		log("thrown")
 		enable("#shadow")
 		enable("#champcollider")

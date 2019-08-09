@@ -16,6 +16,9 @@ images {
 images {
   image: "/assets/images/champs/shadow.png"
 }
+images {
+  image: "/assets/images/champs/chair.png"
+}
 animations {
   id: "terry_brogan_taunt"
   images {
@@ -605,6 +608,25 @@ animations {
   }
   images {
     image: "/assets/images/referee/referee_walk3.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 10
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "terry_brogan_spin"
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_punch0.png"
+  }
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_punch_left_right0.png"
+  }
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_punch_left0.png"
+  }
+  images {
+    image: "/assets/images/champs/terry_hollywood_brogan/terry_brogan_back_arms_out2.png"
   }
   playback: PLAYBACK_LOOP_FORWARD
   fps: 10

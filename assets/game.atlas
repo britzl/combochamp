@@ -59,9 +59,6 @@ images {
   image: "/assets/images/ring/gradient_mat.png"
 }
 images {
-  image: "/assets/images/ring/gradient_floor.png"
-}
-images {
   image: "/assets/images/hud/purple_1px.png"
 }
 images {
@@ -72,6 +69,47 @@ images {
 }
 images {
   image: "/assets/images/hud/darkred_1px.png"
+}
+images {
+  image: "/assets/images/champs/shadow.png"
+}
+animations {
+  id: "spectator_walk"
+  images {
+    image: "/assets/images/spectator_walk0.png"
+  }
+  images {
+    image: "/assets/images/spectator_walk1.png"
+  }
+  images {
+    image: "/assets/images/spectator_walk2.png"
+  }
+  images {
+    image: "/assets/images/spectator_walk3.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 5
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "spectator_walk_lifting"
+  images {
+    image: "/assets/images/spectator_walk_lifting0.png"
+  }
+  images {
+    image: "/assets/images/spectator_walk_lifting1.png"
+  }
+  images {
+    image: "/assets/images/spectator_walk_lifting2.png"
+  }
+  images {
+    image: "/assets/images/spectator_walk_lifting3.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 5
+  flip_horizontal: 0
+  flip_vertical: 0
 }
 margin: 0
 extrude_borders: 2
