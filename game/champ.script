@@ -83,7 +83,6 @@ local function is_attacking(id) return get_champ(id).attacking end
 local function is_lifting_champ(id) return get_champ(id).lifting_champ end
 local function is_lifting_chair(id) return get_champ(id).lifting_chair end
 local function is_lifted(id) return get_champ(id).lifted end
-local function is_pinning_champ(id) return get_champ(id).pinning_champ end
 local function is_pinned(id) return get_champ(id).pinned end
 local function is_jumping(id) return get_champ(id).jumping end
 local function is_busy(id) return get_champ(id).busy end
@@ -346,7 +345,7 @@ end
 local function handle_action(self, action_id, action)
 	self.state.on_input(action_id, action)
 
-	if is_stunned() or is_down() or is_busy() or is_pinning_champ() then
+	if is_stunned() or is_down() or is_busy() then
 		return
 	end
 
@@ -413,7 +412,7 @@ end
 local function start_ai(self)
 	local target = nil
 	sequence.run_loop(function()
-		if is_down() or is_lifted() or is_pinned() or is_pinning_champ() then
+		if is_down() or is_lifted() or is_pinned() then
 			sequence.delay(0.5)
 			return
 		end
@@ -621,7 +620,6 @@ function update(self, dt)
 		and not is_on_ring_post()
 		and not is_busy()
 		and not is_lifted()
-		and not is_pinning_champ()
 
 	if self.state.is_pressed(actions.LEFT) and can_move then
 		self.speed.x = self.speed.x - self.acceleration * dt
@@ -645,7 +643,7 @@ function update(self, dt)
 		self.speed.y = vmath.lerp(self.current_speed_lerp, self.speed.y, 0)
 	end
 
-	if not is_attacking() and not is_jumping() and not is_pinning_champ() then
+	if not is_attacking() and not is_jumping() then
 		local lifting_something = is_lifting_champ() or is_lifting_chair()
 		if is_on_ring_post() then
 			play_flipbook(self, "taunt")
