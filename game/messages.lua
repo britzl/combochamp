@@ -6,6 +6,9 @@ M.TRIGGER_RESPONSE = hash("trigger_response")
 M.LIFTED = hash("lifted")
 M.THROWN = hash("thrown")
 M.ACTIVATE = hash("activate")
+M.CHAMP_PINNED = hash("champ_pinned")
+M.CHAMP_UNPINNED = hash("champ_unpinned")
+M.GAME_OVER = hash("game_over")
 
 
 return M

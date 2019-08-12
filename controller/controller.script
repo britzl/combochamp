@@ -17,7 +17,7 @@ local function show_game()
 			champ = champs.BRETT_AMOR,
 			team = 2,
 		},
-		{
+		--[[{
 			index = 3,
 			controls = controls.CPU,
 			champ = champs.GREEN_GORGON,
@@ -29,7 +29,7 @@ local function show_game()
 			champ = champs.MARK_DEVOTION,
 			team = 4,
 		},
-		--[[--]]
+		--]]
 	}
 	monarch.show("game", nil, players)
 end
@@ -39,7 +39,7 @@ function init(self)
 	--monarch.debug()
 	msg.post(".", "acquire_input_focus")
 	timer.delay(0, false, function()
-		--show_game()
-		monarch.show("menubg") monarch.show("title")
+		show_game()
+		--monarch.show("menubg") monarch.show("title")
 	end)
 end

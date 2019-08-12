@@ -12,16 +12,45 @@ local function play_flipbook(self, anim)
 	end
 end
 
-function init(self)
-	self.speed = 30
-	self.champs = {}
+local function disable(url)
+	msg.post(url, "disable")
 end
 
-function update(self, dt)
-	if self.idle then
-		return
-	end
-	
+local function enable(url)
+	msg.post(url, "enable")
+end
+
+
+local function start_countdown(self, champ, pinned_champ)
+	sequence.run_once(function()
+		self.busy = true
+		self.idle = false
+		self.target = go.get_position(champ)
+		enable("#label")
+		for i=1,10 do
+			label.set_text("#label", tostring(10 - i))
+			sequence.delay(0.7)
+			if not self.busy then
+				disable("#label")
+				return
+			end
+		end
+		label.set_text("#label", "OUT!")
+		local winner = champ
+		msg.post("game", messages.GAME_OVER, { winner = winner })
+		for champ,_ in pairs(self.champs) do
+			msg.post(champ, messages.GAME_OVER, { winner = winner })
+		end
+		self.busy = false
+	end)
+end
+
+local function stop_countdown(self)
+	self.busy = false
+	disable("#label")
+end
+
+local function calculate_midpoint(self)
 	-- calculate a mid position for all champs
 	local mid = vmath.vector3()
 	local count = 1
@@ -32,29 +61,55 @@ function update(self, dt)
 	mid.x = mid.x / count
 	mid.y = mid.y / count
 	mid.z = 0
+	return mid
+end
 
-	-- position referee offset from the mid position
+
+local function idle(self)
+	log("idle")
+	sequence.run_once(function()
+		self.idle = true
+		play_flipbook(self, "referee_idle")
+		sequence.delay(0.8)
+		self.idle = false
+	end)
+end
+
+
+function init(self)
+	self.speed = 30
+	self.champs = {}
+	self.target = go.get_position()
+	disable("#label")
+end
+
+
+function update(self, dt)
+	if self.idle or self.busy then
+		return
+	end
+
+	if not self.busy then
+		self.target = calculate_midpoint(self)
+	end
+
+	-- position referee offset from the target position
 	local pos = go.get_position()
-	local a = math.atan2(mid.y - pos.y, mid.x - pos.x)
-	local target = mid + vmath.vector3(math.sin(a), math.cos(a), 0) * 40
+	local a = math.atan2(self.target.y - pos.y, self.target.x - pos.x)
+	local target = self.target + vmath.vector3(math.sin(a), math.cos(a), 0) * 40
 
 	local diff = target - pos
 	local dir = vmath.normalize(diff)
 	local distance = vmath.length(diff)
-	if distance > 5 then
-		play_flipbook(self, "referee_walk")
-		pos = pos + dir * self.speed * dt
-		pos.z = 1 - pos.y / 640
-		go.set_position(pos)
-	else
-		log("idle")
-		sequence.run_once(function()
-			self.idle = true
-			play_flipbook(self, "referee_idle")
-			sequence.delay(0.8)
-			self.idle = false
-		end)
+	if distance < 5 then
+		idle(self)
+		return
 	end
+
+	play_flipbook(self, "referee_walk")
+	pos = pos + dir * self.speed * dt
+	pos.z = 1 - pos.y / 640
+	go.set_position(pos)
 end
 
 function on_message(self, message_id, message, sender)
@@ -72,6 +127,10 @@ function on_message(self, message_id, message, sender)
 				self.champs[message.other_id] = nil
 			end
 		end
+	elseif message_id == messages.CHAMP_UNPINNED then
+		stop_countdown(self)
+	elseif message_id == messages.CHAMP_PINNED then
+		start_countdown(self, message.champ, message.pinned)
 	end
 end
 

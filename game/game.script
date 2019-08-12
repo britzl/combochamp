@@ -3,9 +3,10 @@ local sounds = require "game.sounds"
 local champs = require "game.champs"
 local sequence = require "ludobits.m.sequence"
 local directions = require "game.directions"
+local messages = require "game.messages"
 
 local RING_CORNERS = {
-	{ x = -100, y = -90 },
+	{ x = -60, y = -40 },
 	{ x = 60, y = -40 },
 	{ x = -60, y = 50 },
 	{ x = 60, y = 50 },
@@ -88,4 +89,12 @@ function init(self)
 		end
 		factory.create("#spectatorfactory", pos, nil, { direction = dir })
 	end)
+end
+
+
+function on_message(self, message_id, message, sender)
+	if message_id == messages.GAME_OVER then
+		print("game over")
+		monarch.show("pregame", { clear = true })
+	end
 end

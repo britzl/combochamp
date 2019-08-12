@@ -59,6 +59,8 @@ local POST_TO_DIRECTION = {
 	[RING_POST_BOTTOMRIGHT] = V3_BOTTOMRIGHT,
 }
 
+local REFEREE = hash("/referee")
+
 local CHAMPS = {
 	all = {},
 	lookup = {},
@@ -80,6 +82,9 @@ local function is_running(id) return get_champ(id).running end
 local function is_attacking(id) return get_champ(id).attacking end
 local function is_lifting_champ(id) return get_champ(id).lifting_champ end
 local function is_lifting_chair(id) return get_champ(id).lifting_chair end
+local function is_lifted(id) return get_champ(id).lifted end
+local function is_pinning_champ(id) return get_champ(id).pinning_champ end
+local function is_pinned(id) return get_champ(id).pinned end
 local function is_jumping(id) return get_champ(id).jumping end
 local function is_busy(id) return get_champ(id).busy end
 local function is_opponent(id) return get_champ().team ~= get_champ(id).team end
@@ -312,19 +317,28 @@ local function taunt(self)
 end
 
 
+local function unpin(self)
+	log("unpin")
+	msg.post(REFEREE, messages.CHAMP_UNPINNED, { champ = go.get_id() })
+	self.pinned = false
+	self.down = false
+end
+
 local function pin(self, champ)
-	log("pin")
+	log("pin", champ)
 	-- pin opponent
 	sequence.run_once(function()
 		self.busy = true
+		local me = go.get_id()
+		get_champ(champ).pinned = me
 		stop(self)
 		local to = go.get_position(champ)
 		to.y = to.y - 1
 		go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD, to.x, go.EASING_INOUTQUAD, 0.3)
 		go.animate(".", "position.y", go.PLAYBACK_ONCE_FORWARD, to.y, go.EASING_OUTBOUNCE, 0.5)
 		play_flipbook(self, "back")
-		msg.post("/referee", "pin", { champ = go.get_id(), pinned = champ })
-		sequence.delay(4)
+		msg.post(REFEREE, messages.CHAMP_PINNED, { champ = me, pinned = champ })
+		sequence.wait_until_false(function() return is_pinned(champ) end)
 		self.busy = false
 	end)
 end
@@ -332,7 +346,7 @@ end
 local function handle_action(self, action_id, action)
 	self.state.on_input(action_id, action)
 
-	if is_stunned() or is_down() or is_busy() then
+	if is_stunned() or is_down() or is_busy() or is_pinning_champ() then
 		return
 	end
 
@@ -370,7 +384,7 @@ local function handle_action(self, action_id, action)
 				throw_champ(self)
 			elseif is_lifting_chair() then
 				throw_chair(self)
-			elseif nearby and is_down(nearby) and not is_lifting_chair() then
+			elseif nearby and is_down(nearby) and not is_pinned(nearby) and not is_lifting_chair() then
 				lift_champ(self, nearby)
 			elseif is_on_ring_post() then
 				jump_from_ring_post(self)
@@ -399,7 +413,7 @@ end
 local function start_ai(self)
 	local target = nil
 	sequence.run_loop(function()
-		if is_down() then
+		if is_down() or is_lifted() or is_pinned() or is_pinning_champ() then
 			sequence.delay(0.5)
 			return
 		end
@@ -463,8 +477,12 @@ local function regenerate_damage(self, dt)
 		local amount = self.max_stamina / 10
 		self.current_stamina = math.min(self.current_stamina + amount * dt, self.max_stamina)
 		if self.current_stamina == self.max_stamina then
-			play_flipbook(self, "idle")
 			self.down = false
+			if is_pinned() then
+				unpin(self)
+			elseif not is_lifted() then
+				play_flipbook(self, "idle")
+			end
 		end
 	else
 		local amount = self.max_stamina / 30
@@ -597,7 +615,14 @@ end
 
 function update(self, dt)
 	regenerate_damage(self, dt)
-	local can_move = not is_attacking() and not is_stunned() and not is_down() and not is_on_ring_post() and not is_busy()
+	local can_move = not is_attacking()
+		and not is_stunned()
+		and not is_down()
+		and not is_on_ring_post()
+		and not is_busy()
+		and not is_lifted()
+		and not is_pinning_champ()
+
 	if self.state.is_pressed(actions.LEFT) and can_move then
 		self.speed.x = self.speed.x - self.acceleration * dt
 		self.direction = directions.LEFT
@@ -620,7 +645,7 @@ function update(self, dt)
 		self.speed.y = vmath.lerp(self.current_speed_lerp, self.speed.y, 0)
 	end
 
-	if not is_attacking() and not is_jumping() then
+	if not is_attacking() and not is_jumping() and not is_pinning_champ() then
 		local lifting_something = is_lifting_champ() or is_lifting_chair()
 		if is_on_ring_post() then
 			play_flipbook(self, "taunt")
@@ -764,12 +789,17 @@ function on_message(self, message_id, message, sender)
 		end
 	elseif message_id == messages.LIFTED then
 		log("lifted")
+		self.lifted = true
 		disable("#shadow")
 		disable("#champcollider")
 	elseif message_id == messages.THROWN then
 		log("thrown")
+		self.lifted = false
 		enable("#shadow")
 		enable("#champcollider")
+	elseif message_id == messages.GAME_OVER then
+		log("game over")
+		self.busy = true
 	end
 end
 

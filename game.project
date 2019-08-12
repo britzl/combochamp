@@ -15,7 +15,7 @@ package = com.britzl.combochamp
 gcm_sender_id = 
 
 [project]
-dependencies = https://github.com/britzl/monarch/archive/dev-queue.zip,https://github.com/britzl/defold-orthographic/archive/2.9.1.zip,https://github.com/britzl/defold-input/archive/2.4.0.zip,https://github.com/britzl/ludobits/archive/6.6.0.zip
+dependencies = https://github.com/britzl/monarch/archive/dev-queue.zip,https://github.com/britzl/defold-orthographic/archive/2.9.1.zip,https://github.com/britzl/defold-input/archive/2.4.0.zip,https://github.com/britzl/ludobits/archive/6.7.1.zip
 title = ComboChamp
 
 [physics]

@@ -4,7 +4,7 @@ local champs = require "game.champs"
 function init(self)
 	self.champs = {}
 	for i=1,4 do
-		self.champs[i] = {
+		local champ = {
 			root = gui.get_node("champ" .. i .. "/root"),
 			portrait = gui.get_node("champ" .. i .. "/portrait"),
 			boost = gui.get_node("champ" .. i .. "/boost"),
@@ -12,8 +12,10 @@ function init(self)
 			health_max = gui.get_node("champ" .. i .. "/health_max"),
 			name = gui.get_node("champ" .. i .. "/name"),
 		}
-
-		gui.set_enabled(self.champs[i].root, false)
+		champ.health_size = gui.get_size(champ.health)
+		champ.health_max_size = gui.get_size(champ.health_max)
+		self.champs[i] = champ
+		gui.set_enabled(champ.root, false)
 	end
 
 	self.vs = {}
@@ -31,8 +33,13 @@ function on_message(self, message_id, message, sender)
 		--gui.set_text(nodes.name, message.in_ring and "ring" or "outside")
 		gui.set_text(nodes.name, champ.short_name)
 		gui.play_flipbook(nodes.portrait, champ.portrait)
-		gui.set_scale(nodes.health_max, vmath.vector3(message.health_max, 1, 1))
-		gui.set_scale(nodes.health, vmath.vector3(message.health, 1, 1))
+
+		local health_size = vmath.vector3(math.ceil(20 * message.health) * 3, nodes.health_size.y, 0)
+		local health_max_size = vmath.vector3(math.ceil(20 * message.health_max) * 3, nodes.health_max_size.y, 0)
+		gui.set_size(nodes.health, health_size)
+		gui.set_size(nodes.health_max, health_max_size)
+		--gui.set_scale(nodes.health_max, vmath.vector3(message.health_max, 1, 1))
+		--gui.set_scale(nodes.health, vmath.vector3(message.health, 1, 1))
 		gui.set_scale(nodes.boost, vmath.vector3(message.boost, 1, 1))
 	elseif message_id == hash("start_game") then
 		for i=1,3 do
