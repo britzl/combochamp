@@ -8,8 +8,6 @@ go.property("initial_stamina", 100)
 go.property("current_stamina", 100)
 go.property("initial_max_speed", 50)
 go.property("current_max_speed", 50)
-go.property("initial_speed_lerp", 0.85)
-go.property("current_speed_lerp", 0.85)
 go.property("acceleration", 250)
 
 local logger = require "ludobits.m.logger"
@@ -88,6 +86,7 @@ local function is_jumping(id) return get_champ(id).jumping end
 local function is_busy(id) return get_champ(id).busy end
 local function is_opponent(id) return get_champ().team ~= get_champ(id).team end
 local function is_me(id) return get_champ().id == id end
+local function is_running(id) return get_champ(id).running end
 local function is_moving(id)
 	return not is_stunned(id)
 	and not is_down(id)
@@ -108,7 +107,6 @@ local function stop(self)
 	self.speed.x = 0
 	self.speed.y = 0
 	self.current_max_speed = self.initial_max_speed
-	self.current_speed_lerp = self.initial_speed_lerp
 end
 
 local function play_flipbook(self, name)
@@ -394,7 +392,6 @@ local function handle_action(self, action_id, action)
 				self.running = true
 				self.current_max_speed = self.initial_max_speed * RUN_RATIO
 				self.speed = actions.direction(action_id) * self.current_max_speed
-				self.current_speed_lerp = 0
 				if self.run_timer then
 					timer.cancel(self.run_timer)
 				end
@@ -516,7 +513,7 @@ local function regenerate_damage(self, dt)
 end
 
 local function take_damage(self, amount, source)
-	if self.down then
+	if self.down or self.stunned then
 		return
 	end
 	self.current_stamina = math.max(self.current_stamina - amount, 0)
@@ -553,10 +550,8 @@ local function take_damage(self, amount, source)
 	-- pushback
 	sequence.run_once(function()
 		self.current_max_speed = self.initial_max_speed * 2 * math.sqrt(amount)
-		self.current_speed_lerp = 0
 		self.speed = dir * -self.current_max_speed
 		sequence.delay(0.10)
-		self.current_speed_lerp = self.initial_speed_lerp
 		self.current_max_speed = self.initial_max_speed
 	end)
 
@@ -627,7 +622,6 @@ function init(self)
 	self.direction = directions.NONE
 	self.state = state.create()
 	self.speed = vmath.vector3()
-	self.current_speed_lerp = self.initial_speed_lerp
 	self.current_max_speed = self.initial_max_speed
 	self.current_stamina = self.initial_stamina
 	self.max_stamina = self.initial_stamina
@@ -676,8 +670,8 @@ function update(self, dt)
 		self.speed.x = self.speed.x + self.acceleration * dt
 		self.direction = directions.RIGHT
 		update_sprite_flip(self)
-	else
-		self.speed.x = vmath.lerp(self.current_speed_lerp, self.speed.x, 0)
+	elseif not is_running() then
+		self.speed.x = vmath.lerp(0.15, self.speed.x, 0)
 	end
 
 	if self.state.is_pressed(actions.UP) and can_move then
@@ -686,8 +680,8 @@ function update(self, dt)
 	elseif self.state.is_pressed(actions.DOWN) and can_move then
 		self.speed.y = self.speed.y - self.acceleration * dt
 		self.direction = directions.DOWN
-	else
-		self.speed.y = vmath.lerp(self.current_speed_lerp, self.speed.y, 0)
+	elseif not is_running() then
+		self.speed.y = vmath.lerp(0.15, self.speed.y, 0)
 	end
 
 	if not is_attacking() and not is_jumping() then
