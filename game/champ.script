@@ -284,6 +284,31 @@ local function jump_from_ring_post(self)
 	end)
 end
 
+
+local function bounce_on_rope(self, normal)
+	log("bounce on rope")
+	increase_boost(self, BOOST_BOUNCE_ROPE)
+	-- increase speed and animate back to previous speed
+	local current_max_speed = self.current_max_speed
+	self.current_max_speed = self.initial_max_speed * ROPE_BOUNCE_RATIO
+	go.animate("#", "current_max_speed", go.PLAYBACK_ONCE_FORWARD, current_max_speed, go.EASING_LINEAR, 0.5)
+	-- flip direction
+	local horizontal = math.abs(normal.x) > math.abs(normal.y)
+	if horizontal then
+		self.speed.x = (normal.x > 0) and self.current_max_speed or -self.current_max_speed
+		self.direction = (normal.x > 0) and directions.RIGHT or directions.LEFT
+		update_sprite_flip(self)
+	else
+		self.speed.y = (normal.y > 0) and self.current_max_speed or -self.current_max_speed
+		self.direction = (normal.y > 0) and directions.UP or directions.DOWN
+	end
+	-- stop running after a certain period of time has elapsed
+	self.run_timer = timer.delay(0.6, false, function()
+		stop(self)
+		self.running = false
+	end)
+end
+
 local function attack(self)
 	log("punch")
 	sequence.run_once(function()
@@ -542,6 +567,27 @@ function init(self)
 	log = logger.create("[champ_" .. self.index .. "]")
 	log(self.controls, self.index, self.champ)
 
+
+	--[[
+
+	Controls:
+	Arrows -> move
+	Double tap arrow -> run
+	Move into opponent -> Grapple
+	A -> Punch
+	B -> Kick
+	A when running -> Clothesline -> Opponent on mat
+	B when running -> Jump kick -> Opponent on mat
+	A when running and opponent on mat -> Elbow
+	B when running and opponent on mat -> Big splash (land on opponent)
+	A when opponent on mat -> Pin opponent -> Referee count
+	B when opponent on mat -> Pick up opponent
+	A when opponent picked up -> Throw (out of ring if possible)
+	B when opponent picked up -> Knee/back breaker
+	A when grappling -> Throw backwards
+	B when grappling -> Backwards kick with flip
+	--]]
+	
 	if self.controls == controls.KEYBOARD then
 		mapper.bind(triggers.KEY_UP, actions.UP, self.index)
 		mapper.bind(triggers.KEY_DOWN, actions.DOWN, self.index)
@@ -588,6 +634,7 @@ function init(self)
 	self.current_boost = 0
 	self.max_boost = 100
 	self.champ_data = champs.get(self.champ)
+	self.start_position = go.get_position()
 	disable("#leftattack")
 	disable("#rightattack")
 	disable("#lefthit")
@@ -650,7 +697,6 @@ function update(self, dt)
 		elseif is_idle() then
 			play_flipbook(self, lifting_something and "idle_lifting" or "idle")
 		elseif is_moving() then
-			--log("WALK DAMMIT", self.speed)
 			play_flipbook(self, lifting_something and "walk_lifting" or "walk")
 		end
 	end
@@ -680,27 +726,7 @@ function on_message(self, message_id, message, sender)
 				if message.distance > 0 then
 					-- bounce on the rope
 					if is_running() then
-						log("bounce on rope")
-						increase_boost(self, BOOST_BOUNCE_ROPE)
-						-- increase speed and animate back to previous speed
-						local current_max_speed = self.current_max_speed
-						self.current_max_speed = self.initial_max_speed * ROPE_BOUNCE_RATIO
-						go.animate("#", "current_max_speed", go.PLAYBACK_ONCE_FORWARD, current_max_speed, go.EASING_LINEAR, 0.5)
-						-- flip direction
-						local horizontal = math.abs(message.normal.x) > math.abs(message.normal.y)
-						if horizontal then
-							self.speed.x = (message.normal.x > 0) and self.current_max_speed or -self.current_max_speed
-							self.direction = (message.normal.x > 0) and directions.RIGHT or directions.LEFT
-							update_sprite_flip(self)
-						else
-							self.speed.y = (message.normal.y > 0) and self.current_max_speed or -self.current_max_speed
-							self.direction = (message.normal.y > 0) and directions.UP or directions.DOWN
-						end
-						-- stop running after a certain period of time has elapsed
-						self.run_timer = timer.delay(0.6, false, function()
-							stop(self)
-							self.running = false
-						end)
+						bounce_on_rope(self, message.normal)
 					-- stop at the rope
 					else
 						log("stop at rope")
@@ -751,7 +777,7 @@ function on_message(self, message_id, message, sender)
 		elseif message.other_group == groups.SPECIAL then
 			if not self.thrown_chairs[message.other_id] then
 				log("hit by special")
-				take_damage(self, 50, message.other_id)
+				take_damage(self, 100, message.other_id)
 			end
 		-- this champ was hit by an attack
 		elseif message.other_group == groups.ATTACK then
@@ -798,6 +824,7 @@ function on_message(self, message_id, message, sender)
 	elseif message_id == messages.GAME_OVER then
 		log("game over")
 		self.busy = true
+		self.game_over = true
 	end
 end
 

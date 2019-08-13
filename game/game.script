@@ -31,6 +31,46 @@ local function create_champ(player)
 	return factory.create("#champfactory", pos, nil, props)
 end
 
+
+
+local function start_game_loop(self, champ_count, team_count)
+	sequence.run_once(function()
+		
+		
+		msg.post("/hud", "start_game", { champs = champ_count, teams = team_count })
+
+		timer.delay(0, false, function()
+			sounds.bell()
+		end)
+
+		while not self.game_over do
+			sequence.delay(math.random(10, 60))
+			if not self.game_over then
+				local dir = directions.random()
+				local pos = vmath.vector3(dir.x * -200, dir.y * -190, 0)
+				if dir.x ~= 0 then
+					pos.y = pos.y + math.random(-50, 50)
+				elseif dir.y ~= 0 then
+					pos.x = pos.x + math.random(-50, 50)
+				end
+				factory.create("#spectatorfactory", pos, nil, { direction = dir })
+			end
+		end
+
+		
+	end)
+
+end
+
+
+local function game_over(self)
+
+	sequence.run_once(function()
+		self.game_over = true
+		monarch.show("pregame", { clear = true })
+	end)
+end
+
 function init(self)
 	local c = 0.3
 	msg.post("@render:", "clear_color", { color = vmath.vector4(c,c,c,1) })
@@ -50,51 +90,14 @@ function init(self)
 			team_count = team_count + 1
 		end
 	end
-
-	msg.post("/hud", "start_game", { champs = #champs, teams = team_count })
-
-	--[[
-
-	Controls:
-	Arrows -> move
-	Double tap arrow -> run
-	Move into opponent -> Grapple
-	A -> Punch
-	B -> Kick
-	A when running -> Clothesline -> Opponent on mat
-	B when running -> Jump kick -> Opponent on mat
-	A when running and opponent on mat -> Elbow
-	B when running and opponent on mat -> Big splash (land on opponent)
-	A when opponent on mat -> Pin opponent -> Referee count
-	B when opponent on mat -> Pick up opponent
-	A when opponent picked up -> Throw (out of ring if possible)
-	B when opponent picked up -> Knee/back breaker
-	A when grappling -> Throw backwards
-	B when grappling -> Backwards kick with flip
-	--]]
-
-	timer.delay(0, false, function()
-		sounds.bell()
-	end)
-
-	sequence.run_loop(function()
-		--sequence.delay(1)
-		sequence.delay(math.random(10, 60))
-		local dir = directions.random()
-		local pos = vmath.vector3(dir.x * -200, dir.y * -190, 0)
-		if dir.x ~= 0 then
-			pos.y = pos.y + math.random(-50, 50)
-		elseif dir.y ~= 0 then
-			pos.x = pos.x + math.random(-50, 50)
-		end
-		factory.create("#spectatorfactory", pos, nil, { direction = dir })
-	end)
+	
+	start_game_loop(self, #champs, team_count)
 end
 
 
 function on_message(self, message_id, message, sender)
 	if message_id == messages.GAME_OVER then
 		print("game over")
-		monarch.show("pregame", { clear = true })
+		game_over(self)
 	end
 end
