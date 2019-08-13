@@ -9,6 +9,6 @@ M.ACTIVATE = hash("activate")
 M.CHAMP_PINNED = hash("champ_pinned")
 M.CHAMP_UNPINNED = hash("champ_unpinned")
 M.GAME_OVER = hash("game_over")
-
+M.SAY = hash("say")
 
 return M

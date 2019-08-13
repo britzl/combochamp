@@ -5,6 +5,8 @@ local sequence = require "ludobits.m.sequence"
 
 local log = logger.create("[referee]")
 
+local V3_ZERO = vmath.vector3()
+
 local function play_flipbook(self, anim)
 	if self.current_animation ~= anim then
 		self.current_animation = anim
@@ -25,7 +27,6 @@ local function start_countdown(self, champ, pinned_champ)
 	sequence.run_once(function()
 		self.busy = true
 		self.idle = false
-		self.target = go.get_position(champ)
 		enable("#label")
 		for i=1,10 do
 			label.set_text("#label", tostring(10 - i))
@@ -36,16 +37,19 @@ local function start_countdown(self, champ, pinned_champ)
 			end
 		end
 		label.set_text("#label", "OUT!")
+		self.game_over = true
+		self.busy = false
+
 		local winner = champ
 		msg.post("game", messages.GAME_OVER, { winner = winner })
 		for champ,_ in pairs(self.champs) do
 			msg.post(champ, messages.GAME_OVER, { winner = winner })
 		end
-		self.busy = false
 	end)
 end
 
 local function stop_countdown(self)
+	print("stop countdown")
 	self.busy = false
 	disable("#label")
 end
@@ -89,14 +93,14 @@ function update(self, dt)
 		return
 	end
 
-	if not self.busy then
-		self.target = calculate_midpoint(self)
-	end
-
-	-- position referee offset from the target position
 	local pos = go.get_position()
-	local a = math.atan2(self.target.y - pos.y, self.target.x - pos.x)
-	local target = self.target + vmath.vector3(math.sin(a), math.cos(a), 0) * 40
+	local target = V3_ZERO
+	if not self.game_over then
+		target = calculate_midpoint(self)
+		-- position referee offset from the target position
+		local a = math.atan2(target.y - pos.y, target.x - pos.x)
+		target = target + vmath.vector3(math.sin(a), math.cos(a), 0) * 40
+	end
 
 	local diff = target - pos
 	local dir = vmath.normalize(diff)
@@ -131,6 +135,9 @@ function on_message(self, message_id, message, sender)
 		stop_countdown(self)
 	elseif message_id == messages.CHAMP_PINNED then
 		start_countdown(self, message.champ, message.pinned)
+	elseif message_id == messages.SAY then
+		enable("#label")
+		label.set_text("#label", message.text)
 	end
 end
 
