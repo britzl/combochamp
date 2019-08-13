@@ -656,6 +656,10 @@ function final(self)
 end
 
 function update(self, dt)
+	if self.game_over then
+		return
+	end
+
 	regenerate_damage(self, dt)
 	local can_move = not is_attacking()
 		and not is_stunned()
