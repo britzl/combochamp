@@ -537,6 +537,8 @@ local function take_damage(self, amount, source)
 		dir.x = 0
 	end
 
+	stop(self)
+
 	-- stun
 	sequence.run_once(function()
 		self.stunned = true
