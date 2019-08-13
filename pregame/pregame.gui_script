@@ -388,7 +388,7 @@ function on_input(self, action_id, action)
 					}
 				end
 			end
-			monarch.show("game", { clear = true }, data)
+			monarch.show("game", nil, data)
 		end
 	end
 end
