@@ -1,7 +1,7 @@
 local soundcontroller = require "util.soundcontroller"
 local sounds = require "game.sounds"
 
-go.property("audience_gain", 0.5)
+go.property("audience_gain", 0.1)
 go.property("cheer_gain", 0.0)
 
 function init(self)

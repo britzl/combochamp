@@ -8,7 +8,6 @@ go.property("initial_stamina", 100)
 go.property("current_stamina", 100)
 go.property("initial_max_speed", 50)
 go.property("current_max_speed", 50)
-go.property("acceleration", 250)
 
 local logger = require "ludobits.m.logger"
 local util = require "ludobits.m.util"
@@ -40,8 +39,8 @@ local RING_POST_TOPRIGHT = hash("/post_topright")
 local RING_POST_BOTTOMLEFT = hash("/post_bottomleft")
 local RING_POST_BOTTOMRIGHT = hash("/post_bottomright")
 
-local RUN_RATIO = 4
-local ROPE_BOUNCE_RATIO = 8
+local RUN_RATIO = 10
+local ROPE_BOUNCE_RATIO = 20
 
 local V3_ZERO = vmath.vector3(0)
 local V3_ONE = vmath.vector3(1)
@@ -288,7 +287,7 @@ local function bounce_on_rope(self, normal)
 	increase_boost(self, BOOST_BOUNCE_ROPE)
 	-- increase speed and animate back to previous speed
 	local current_max_speed = self.current_max_speed
-	self.current_max_speed = self.initial_max_speed * ROPE_BOUNCE_RATIO
+	self.current_max_speed = math.sqrt(self.initial_max_speed * 2) * ROPE_BOUNCE_RATIO
 	go.animate("#", "current_max_speed", go.PLAYBACK_ONCE_FORWARD, current_max_speed, go.EASING_LINEAR, 0.5)
 	-- flip direction
 	local horizontal = math.abs(normal.x) > math.abs(normal.y)
@@ -390,7 +389,7 @@ local function handle_action(self, action_id, action)
 			log("run")
 			sequence.run_once(function()
 				self.running = true
-				self.current_max_speed = self.initial_max_speed * RUN_RATIO
+				self.current_max_speed = math.sqrt(self.initial_max_speed * 2) * RUN_RATIO
 				self.speed = actions.direction(action_id) * self.current_max_speed
 				if self.run_timer then
 					timer.cancel(self.run_timer)
@@ -495,7 +494,7 @@ end
 
 local function regenerate_damage(self, dt)
 	if is_down() and self.max_stamina > 0 then
-		local amount = self.max_stamina / 10
+		local amount = self.max_stamina / (5 + self.knockout_count * 2)
 		self.current_stamina = math.min(self.current_stamina + amount * dt, self.max_stamina)
 		if self.current_stamina == self.max_stamina then
 			self.down = false
@@ -506,8 +505,8 @@ local function regenerate_damage(self, dt)
 			end
 		end
 	else
-		local amount = self.max_stamina / 30
-		self.current_stamina = math.min(self.current_stamina + amount * dt, self.max_stamina)
+		--local amount = self.max_stamina / 30
+		--self.current_stamina = math.min(self.current_stamina + amount * dt, self.max_stamina)
 	end
 	update_hud(self)
 end
@@ -518,7 +517,8 @@ local function take_damage(self, amount, source)
 	end
 	self.current_stamina = math.max(self.current_stamina - amount, 0)
 	if self.current_stamina == 0 then
-		self.max_stamina = math.max(self.max_stamina - self.initial_stamina * 0.2, 0)
+		self.knockout_count = self.knockout_count + 1
+		--self.max_stamina = math.max(self.max_stamina - self.initial_stamina * 0.2, 0)
 		sequence.run_once(function()
 			log("down")
 			self.down = true
@@ -542,7 +542,7 @@ local function take_damage(self, amount, source)
 	-- stun
 	sequence.run_once(function()
 		self.stunned = true
-		local left = dir.x > 0
+		local left = dir.x < 0
 		enable(left and "#lefthit" or "#righthit")
 		sequence.delay(0.25)
 		disable(left and "#lefthit" or "#righthit")
@@ -625,10 +625,12 @@ function init(self)
 	self.state = state.create()
 	self.speed = vmath.vector3()
 	self.current_max_speed = self.initial_max_speed
+	self.acceleration = self.initial_max_speed * 10
 	self.current_stamina = self.initial_stamina
 	self.max_stamina = self.initial_stamina
 	self.current_boost = 0
 	self.max_boost = 100
+	self.knockout_count = 0
 	self.champ_data = champs.get(self.champ)
 	self.start_position = go.get_position()
 	disable("#leftattack")

@@ -49,6 +49,12 @@ images {
 images {
   image: "/assets/images/ui/mexico.png"
 }
+images {
+  image: "/assets/images/ui/ready.png"
+}
+images {
+  image: "/assets/images/ui/not_ready.png"
+}
 margin: 0
 extrude_borders: 3
 inner_padding: 0

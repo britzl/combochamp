@@ -36,7 +36,7 @@ end
 local function start_game_loop(self, champ_count, team_count)
 	sequence.run_once(function()
 		
-		
+		sound.play("#music")
 		msg.post("/hud", "start_game", { champs = champ_count, teams = team_count })
 
 		timer.delay(0, false, function()
@@ -67,7 +67,7 @@ local function game_over(self, winner)
 	sequence.run_once(function()
 		self.game_over = true
 		local name = self.champs[winner].name
-		msg.post("/referee", messages.SAY, { text = ("AND THE WINNER IS %s"):format(name) })
+		msg.post("/referee", messages.SAY, { text = ("AND THE WINNER IS\n%s"):format(name) })
 		sequence.delay(5)
 		msg.post(".", "acquire_input_focus")
 		msg.post("/referee", messages.SAY, { text = "PRESS ANY KEY TO CONTINUE" })

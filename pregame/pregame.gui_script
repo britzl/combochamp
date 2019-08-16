@@ -142,6 +142,7 @@ function init(self)
 		nodes.active = champ_node(i, "active")
 		nodes.inactive = champ_node(i, "inactive")
 		nodes.name = champ_node(i, "name")
+		nodes.stats = champ_node(i, "stats")
 		nodes.champ = champ_node(i, "champ")
 		nodes.champ_hitbox = champ_node(i, "champ_hitbox")
 		nodes.team = champ_node(i, "team")
@@ -173,24 +174,28 @@ local function update_player(player)
 			gui.set_text(nodes.controls, "KEYBOARD")
 			gui.play_flipbook(nodes.controls, "keyboard")
 			gui.set_enabled(player.cursor, true)
+			gui.set_enabled(nodes.ready, true)
 		elseif player.controls == controls.GAMEPAD then
 			gui.set_text(nodes.controls, "GAMEPAD " .. player.gamepad)
 			gui.play_flipbook(nodes.controls, "gamepad")
 			gui.set_enabled(player.cursor, true)
+			gui.set_enabled(nodes.ready, true)
 		elseif player.controls == controls.CPU then
 			gui.set_text(nodes.controls, "CPU")
 			gui.play_flipbook(nodes.controls, "cpu")
 			gui.set_enabled(player.cursor, false)
+			gui.set_enabled(nodes.ready, false)
 		else
 			gui.set_enabled(player.cursor, false)
 		end
 		gui.play_flipbook(nodes.champ, player.champ.idle)
 		gui.set_text(nodes.name, player.champ.name)
+		gui.set_text(nodes.stats, player.champ.stats_desc)
 		gui.play_flipbook(nodes.team, teams.flag(player.team))
 		if player.ready then
-			gui.set_text(nodes.ready, "READY!")
+			gui.play_flipbook(nodes.ready, "ready")
 		else
-			gui.set_text(nodes.ready, "READY?")
+			gui.play_flipbook(nodes.ready, "not_ready")
 		end
 	end
 end
