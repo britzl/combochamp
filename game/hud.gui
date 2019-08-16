@@ -2057,7 +2057,7 @@ nodes {
   type: TYPE_TEXT
   blend_mode: BLEND_MODE_ALPHA
   text: "Arrows to move. Double-tap to dash.\n"
-  "N to punch."
+  "N to punch or pick up. M to taunt or pin"
   font: "game"
   id: "instructions"
   xanchor: XANCHOR_NONE
