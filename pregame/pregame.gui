@@ -3293,7 +3293,7 @@ nodes {
 nodes {
   position {
     x: 400.0
-    y: 22.0
+    y: 28.0
     z: 0.0
     w: 1.0
   }
@@ -3304,9 +3304,9 @@ nodes {
     w: 1.0
   }
   scale {
-    x: 3.0
-    y: 3.0
-    z: 3.0
+    x: 2.0
+    y: 2.0
+    z: 2.0
     w: 1.0
   }
   size {
@@ -3323,7 +3323,9 @@ nodes {
   }
   type: TYPE_TEXT
   blend_mode: BLEND_MODE_ALPHA
-  text: "PRESS ANY KEY ON KEYBOARD OR GAMEPAD TO JOIN"
+  text: "PRESS ANY KEY ON KEYBOARD OR GAMEPAD TO JOIN\n"
+  "Keyboard: Arrows to move. Double-tap to dash.\n"
+  "N to punch or pick up. M to taunt or pin"
   font: "game"
   id: "instructions"
   xanchor: XANCHOR_NONE

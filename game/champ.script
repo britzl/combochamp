@@ -86,6 +86,7 @@ local function is_busy(id) return get_champ(id).busy end
 local function is_opponent(id) return get_champ().team ~= get_champ(id).team end
 local function is_me(id) return get_champ().id == id end
 local function is_running(id) return get_champ(id).running end
+local function is_boosted(id) return get_champ(id).current_boost == get_champ(id).max_boost end
 local function is_moving(id)
 	return not is_stunned(id)
 	and not is_down(id)
@@ -98,6 +99,16 @@ local function is_idle(id)
 	and not is_running(id)
 	and not is_stunned(id)
 	and not is_busy(id)
+end
+
+local function random_opponent()
+	local opponents = {}
+	for id,champ in pairs(CHAMPS.lookup) do
+		if is_opponent(id) then
+			opponents[#opponents + 1] = champ
+		end
+	end
+	return opponents[math.random(1, #opponents)]
 end
 
 local function stop(self)
@@ -415,10 +426,24 @@ local function handle_action(self, action_id, action)
 	elseif action_id == actions.B then
 		if action.pressed then
 			local nearby = next(self.nearby_champ)
-			if not nearby then
-				taunt(self)
-			elseif is_down(nearby) then
+			if is_down(nearby) then
 				pin(self, nearby)
+			--[[elseif is_boosted() then
+				self.current_boost = 0
+				update_hud(self)
+				sequence.run_once(function()
+					self.busy = true
+					self.current_speed = self.initial_speed * 10
+					
+					local opponent = random_opponent()
+					pprint(opponent)
+					
+					
+					self.current_speed = self.initial_speed
+					self.busy = true
+				end)--]]
+			else
+				taunt(self)
 			end
 		end
 	end
@@ -783,7 +808,8 @@ function on_message(self, message_id, message, sender)
 			end
 		-- this champ was hit by an attack
 		elseif message.other_group == groups.ATTACK then
-			take_damage(self, 10, message.other_id)
+			local damage = is_running(message.other_id) and 30 or 10
+			take_damage(self, damage, message.other_id)
 		-- this champ came in contact with the ring post
 		elseif message.other_group == groups.POST then
 			if not is_in_ring() then

@@ -16,6 +16,8 @@ function init(self)
 		champ.health_max_size = gui.get_size(champ.health_max)
 		self.champs[i] = champ
 		gui.set_enabled(champ.root, false)
+		gui.set_enabled(champ.boost, false)
+		gui.set_enabled(gui.get_node("champ" .. i .. "/boost_bg"), false)
 	end
 
 	self.vs = {}
@@ -45,7 +47,7 @@ function on_message(self, message_id, message, sender)
 		for i=1,3 do
 			gui.set_enabled(self.vs[i], i < message.teams)
 		end
-		local y = 140
+		local y = 145
 		if message.champs == 1 then
 			gui.set_position(self.champs[1].root, vmath.vector3(0, y, 0))
 		elseif message.champs == 2 then
