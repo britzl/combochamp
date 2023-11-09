@@ -2,6 +2,7 @@
 
 This is a contribution to the [2019 A Game By Its Cover](https://itch.io/jam/a-game-by-its-cover-2019) game jam.
 
+Play the game on itch.io: [https://britzl.itch.io/combo-champ](https://britzl.itch.io/combo-champ)
 
 ## Credits
 
